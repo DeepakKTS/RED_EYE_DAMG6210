@@ -1,19 +1,24 @@
--- Drop tables if they exist to prevent errors on re-run
+DECLARE
+    table_count NUMBER;
+    tables_to_drop SYS.ODCIVARCHAR2LIST := SYS.ODCIVARCHAR2LIST(
+        'SHIFTS', 'MAINTENANCE_SCHEDULES', 'THIRD_PARTY_SERVICES', 
+        'DRIVERS', 'RIDES', 'TRIPS', 'SHUTTLES', 'LOCATIONS', 
+        'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS'
+    );
 BEGIN
-   EXECUTE IMMEDIATE 'DROP TABLE user_roles CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE users CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE roles CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE permissions CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE drivers CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE rides CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE trips CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE locations CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE shuttles CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE shifts CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE third_party_services CASCADE CONSTRAINTS';
-   EXECUTE IMMEDIATE 'DROP TABLE maintenance_schedules CASCADE CONSTRAINTS';
-EXCEPTION
-   WHEN OTHERS THEN NULL;
+    FOR i IN 1 .. tables_to_drop.COUNT LOOP
+        SELECT COUNT(*)
+        INTO table_count
+        FROM user_tables
+        WHERE table_name = tables_to_drop(i);
+
+        IF table_count > 0 THEN
+            EXECUTE IMMEDIATE 'DROP TABLE ' || tables_to_drop(i) || ' CASCADE CONSTRAINTS';
+            DBMS_OUTPUT.PUT_LINE('Dropped table ' || tables_to_drop(i));
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Table ' || tables_to_drop(i) || ' does not exist.');
+        END IF;
+    END LOOP;
 END;
 /
 
@@ -34,10 +39,9 @@ CREATE TABLE roles (
 
 -- User Roles table (junction table)
 CREATE TABLE user_roles (
+    user_role_id VARCHAR2(50) PRIMARY KEY,  -- unique identifier for each user-role assignment
     role_id VARCHAR2(50),
     user_id VARCHAR2(50),
-    roleId VARCHAR2(50),
-    PRIMARY KEY (role_id),
     FOREIGN KEY (role_id) REFERENCES roles(role_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -58,6 +62,24 @@ CREATE TABLE locations (
     coordinates VARCHAR2(100)
 );
 
+-- Shuttles table
+CREATE TABLE shuttles (
+    shuttle_id VARCHAR2(50) PRIMARY KEY,
+    model VARCHAR2(50),
+    capacity NUMBER,
+    licensePlate VARCHAR2(50) UNIQUE
+);
+
+-- Trips table
+CREATE TABLE trips (
+    trip_id VARCHAR2(50) PRIMARY KEY,
+    startTime TIMESTAMP,
+    endTime TIMESTAMP,
+    status VARCHAR2(50),
+    shuttle_id VARCHAR2(50),
+    FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id)
+);
+
 -- Rides table
 CREATE TABLE rides (
     ride_id VARCHAR2(50) PRIMARY KEY,
@@ -72,22 +94,22 @@ CREATE TABLE rides (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- Trips table
-CREATE TABLE trips (
-    trip_id VARCHAR2(50) PRIMARY KEY,
-    startTime TIMESTAMP,
-    endTime TIMESTAMP,
-    status VARCHAR2(50),
-    shuttle_id VARCHAR2(50),
-    FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id)
+
+-- Third Party Services table
+CREATE TABLE third_party_services (
+    tp_id VARCHAR2(50) PRIMARY KEY,
+    name VARCHAR2(100),
+    contactInfo VARCHAR2(255)
 );
 
--- Shuttles table
-CREATE TABLE shuttles (
-    shuttle_id VARCHAR2(50) PRIMARY KEY,
-    model VARCHAR2(50),
-    capacity NUMBER,
-    licensePlate VARCHAR2(50) UNIQUE
+-- Drivers table
+CREATE TABLE drivers (
+    driver_id VARCHAR2(50) PRIMARY KEY,
+    user_role_id VARCHAR2(50) UNIQUE,  -- Unique constraint to link to specific user-role combination
+    licenseNumber VARCHAR2(50) UNIQUE,
+    tp_id VARCHAR2(50),
+    FOREIGN KEY (user_role_id) REFERENCES user_roles(user_role_id),
+    FOREIGN KEY (tp_id) REFERENCES third_party_services(tp_id)
 );
 
 -- Shifts table
@@ -101,22 +123,6 @@ CREATE TABLE shifts (
     FOREIGN KEY (driver_id) REFERENCES drivers(driver_id)
 );
 
--- Drivers table
-CREATE TABLE drivers (
-    driver_id VARCHAR2(50) PRIMARY KEY,
-    user_id VARCHAR2(50),
-    licenseNumber VARCHAR2(50) UNIQUE,
-    tp_id VARCHAR2(50),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (tp_id) REFERENCES third_party_services(tp_id)
-);
-
--- Third Party Services table
-CREATE TABLE third_party_services (
-    tp_id VARCHAR2(50) PRIMARY KEY,
-    name VARCHAR2(100),
-    contactInfo VARCHAR2(255)
-);
 
 -- Maintenance Schedules table
 CREATE TABLE maintenance_schedules (
