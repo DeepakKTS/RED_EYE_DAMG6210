@@ -56,10 +56,10 @@ The script grants the following privileges to the `REDEYE` user:
 
 ## Steps to Initialize the Database with Required Views
 
-1. **Create user using the CREATE_USER.sql script.**
+1. **Create user using the `CREATE_USER.sql` script.**
 2. **Login using the created user to run the rest of the scripts.**
-3. **Run the CREATE_TABLES.sql script** to create the necessary tables.
-4. **Run the INSERT_DATA.sql script** to populate the tables with initial data.
+3. **Run the `CREATE_TABLES.sql` script** to create the necessary tables.
+4. **Run the `INSERT_DATA.sql` script** to populate the tables with initial data.
 5. **Run the CREATE_VIEWS.sql script** to create and update the views.
 
 By following these steps, you will set up the Redeye system's database and be ready to manage shuttle bookings efficiently.
