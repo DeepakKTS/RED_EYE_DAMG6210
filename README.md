@@ -1,44 +1,65 @@
 # RED_EYE_DAMG6210
 
-CREATE_USER_REDYE_GRANT_PERMISSIONS.sql
+## Overview
 
-Prerequisites
+The Redeye system is a comprehensive shuttle booking system designed to manage users, roles, shuttles, trips, rides, and maintenance schedules. This README provides instructions on how to set up and initialize the database for the Redeye system.
 
-Admin Privileges Required: The script must be executed on the admin database (DBA level) since it utilizes the DBA_USERS table to check for existing users and grants system-level privileges.
-Script Overview
-The SQL script performs the following steps:
+## Prerequisites
 
-Check for Existing User: It first checks if the REDEYE user already exists within the DBA_USERS table.
-Drop Existing User: If the REDEYE user exists, the script will drop the user (including all associated objects) to ensure a clean setup.
-Create New User: It then creates a new user REDEYE with a specified password (NeuBoston2024#).
-Grant Privileges: A comprehensive set of privileges is granted to the REDEYE user, as outlined below.
-Privileges Granted
-The script grants the following privileges to the REDEYE user:
+**Admin Privileges Required:** The setup scripts must be executed on an Oracle database with DBA privileges, as they utilize the `DBA_USERS` table to check for existing users and grant system-level privileges.
 
-Basic Access Privileges:
+## Script Overview
 
-CREATE SESSION (with admin option)
-CONNECT
-Unlimited quota on the DATA tablespace.
-Object Creation and Modification Privileges:
+The SQL scripts perform the following steps:
 
-CREATE TABLE
-CREATE VIEW
-ALTER ANY TABLE
-DROP ANY TABLE
-CREATE ANY INDEX
-ALTER ANY INDEX
-Data Manipulation Privileges:
+1. **Check for Existing User:** Verify if the `REDEYE` user exists in the `DBA_USERS` table.
+2. **Drop Existing User:** If the `REDEYE` user exists, drop the user (including all associated objects) to ensure a clean setup.
+3. **Create New User:** Create a new user `REDEYE` with the specified password (`NeuBoston2024#`).
+4. **Grant Privileges:** Grant a comprehensive set of privileges to the `REDEYE` user.
 
-SELECT ANY TABLE
-INSERT ANY TABLE
-UPDATE ANY TABLE
-DELETE ANY TABLE
-Procedure Privileges:
+## Privileges Granted
 
-CREATE PROCEDURE
-EXECUTE ANY PROCEDURE
-Usage
-Clone this repository.
-Connect to your Oracle database with DBA privileges.
-Execute the script in an SQL environment (such as SQL*Plus, SQL Developer, or any Oracle-compatible environment with DBA access).
+The script grants the following privileges to the `REDEYE` user:
+
+### Basic Access Privileges
+
+- `CREATE SESSION` (with admin option)
+- `CONNECT`
+- Unlimited quota on the `DATA` tablespace
+
+### Object Creation and Modification Privileges
+
+- `CREATE TABLE`
+- `CREATE VIEW`
+- `ALTER ANY TABLE`
+- `DROP ANY TABLE`
+- `CREATE ANY INDEX`
+- `ALTER ANY INDEX`
+
+### Data Manipulation Privileges
+
+- `SELECT ANY TABLE`
+- `INSERT ANY TABLE`
+- `UPDATE ANY TABLE`
+- `DELETE ANY TABLE`
+
+### Procedure Privileges
+
+- `CREATE PROCEDURE`
+- `EXECUTE ANY PROCEDURE`
+
+## Usage
+
+1. **Clone this repository.**
+2. **Connect to your Oracle database with DBA privileges.**
+3. **Execute the script in an SQL environment** (such as SQL*Plus, SQL Developer, or any Oracle-compatible environment with DBA access).
+
+## Steps to Initialize the Database with Required Views
+
+1. **Create user using the CREATE_USER.sql script.**
+2. **Login using the created user to run the rest of the scripts.**
+3. **Run the CREATE_TABLES.sql script** to create the necessary tables.
+4. **Run the INSERT_DATA.sql script** to populate the tables with initial data.
+5. **Run the CREATE_VIEWS.sql script** to create and update the views.
+
+By following these steps, you will set up the Redeye system's database and be ready to manage shuttle bookings efficiently.
