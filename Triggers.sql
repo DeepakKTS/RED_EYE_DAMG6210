@@ -47,3 +47,25 @@ BEGIN
     END IF;
 END;
 /
+/* Trigger 3: Vehicle Mileage Constraints
+This trigger ensures that shuttles with mileage exceeding the predefined threshold 
+cannot be assigned to shifts, enforcing regular vehicle maintenance and operational safety.*/
+
+CREATE OR REPLACE TRIGGER enforce_vehicle_mileage_constraint
+BEFORE INSERT OR UPDATE ON shifts
+FOR EACH ROW
+DECLARE
+    mileage_threshold NUMBER := 100000; -- Example mileage threshold
+    current_mileage NUMBER;
+BEGIN
+    -- Fetch the current mileage of the shuttle
+    SELECT mileage INTO current_mileage
+    FROM shuttles
+    WHERE shuttle_id = :NEW.shuttle_id;
+
+    -- Check if the mileage exceeds the threshold
+    IF current_mileage > mileage_threshold THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Shuttle cannot be assigned as mileage exceeds the threshold.');
+    END IF;
+END;
+/
