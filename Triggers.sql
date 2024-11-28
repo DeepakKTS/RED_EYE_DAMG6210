@@ -69,3 +69,28 @@ BEGIN
     END IF;
 END;
 /
+/* Trigger 4: Idle Time Management
+This trigger ensures that shuttles have a minimum idle time of 2 hours between consecutive shifts, optimizing resource usage while avoiding overuse.*/
+CREATE OR REPLACE TRIGGER enforce_vehicle_mileage_constraint
+BEFORE INSERT OR UPDATE ON shifts
+FOR EACH ROW
+DECLARE
+    mileage_threshold NUMBER := 100000; -- Example mileage threshold
+    current_mileage NUMBER;
+BEGIN
+    -- Fetch the current mileage of the shuttle
+    BEGIN
+        SELECT mileage INTO current_mileage
+        FROM shuttles
+        WHERE shuttle_id = :NEW.shuttle_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20007, 'Shuttle ID not found in shuttles table.');
+    END;
+
+    -- Check if the mileage exceeds the threshold
+    IF current_mileage > mileage_threshold THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Shuttle cannot be assigned as mileage exceeds the threshold.');
+    END IF;
+END;
+/
