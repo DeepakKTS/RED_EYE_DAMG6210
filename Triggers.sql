@@ -94,3 +94,30 @@ BEGIN
     END IF;
 END;
 /
+
+/*Trigger 5: Driver Background Checks.
+This trigger ensures that drivers can only be assigned if their background check 
+status is marked as "Cleared," enhancing the security and reliability of the service.*/
+ 
+CREATE OR REPLACE TRIGGER enforce_driver_background_check
+BEFORE INSERT OR UPDATE ON drivers
+FOR EACH ROW
+DECLARE
+    background_check_status VARCHAR2(10);
+BEGIN
+    -- Fetch the driver's background check status
+    BEGIN
+        SELECT background_check INTO background_check_status
+        FROM driver_verifications
+        WHERE driver_id = :NEW.driver_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20008, 'Driver ID not found in driver_verifications table.');
+    END;
+ 
+    -- Check if the background check is cleared
+    IF background_check_status != 'Cleared' THEN
+        RAISE_APPLICATION_ERROR(-20006, 'Driver cannot be assigned as background check is not cleared.');
+    END IF;
+END;
+/
