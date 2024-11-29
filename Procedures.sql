@@ -172,3 +172,90 @@ EXCEPTION
         RAISE;
 END;
 /
+
+/*Procedure 5: WAITLIST_NOTIFICATIONS.This procedure handles notifying users who are on a waitlist when a shuttle becomes available.
+It checks for shuttles with available capacity and matches them to users on the waitlist for a specific route. 
+Once a match is found, the user is notified, and their waitlist status is updated.
+*/
+CREATE OR REPLACE PROCEDURE waitlist_notifications IS
+    -- Variables
+    v_shuttle_id shuttles.shuttle_id%TYPE;
+    v_route_pickup VARCHAR2(50);
+    v_route_dropoff VARCHAR2(50);
+    v_waitlist_user_id users.user_id%TYPE;
+
+    -- Cursor to find available shuttles
+    CURSOR available_shuttles IS
+        SELECT s.shuttle_id, r.pickupLocationId, r.dropoffLocationId
+        FROM shuttles s
+        JOIN trips t ON s.shuttle_id = t.shuttle_id
+        JOIN rides r ON t.trip_id = r.trip_id
+        WHERE s.capacity > (
+            SELECT COUNT(*)
+            FROM rides r2
+            JOIN trips t2 ON r2.trip_id = t2.trip_id
+            WHERE t2.shuttle_id = s.shuttle_id AND r2.status = 'Booked'
+        )
+          AND r.status = 'Waitlisted';
+
+    -- Cursor to find users on the waitlist
+    CURSOR waitlist_users (p_pickupLocationId VARCHAR2, p_dropoffLocationId VARCHAR2) IS
+        SELECT user_id
+        FROM rides
+        WHERE pickupLocationId = p_pickupLocationId
+          AND dropoffLocationId = p_dropoffLocationId
+          AND status = 'Waitlisted';
+
+BEGIN
+    -- Open the cursor for available shuttles
+    OPEN available_shuttles;
+
+    LOOP
+        -- Fetch an available shuttle
+        FETCH available_shuttles INTO v_shuttle_id, v_route_pickup, v_route_dropoff;
+        EXIT WHEN available_shuttles%NOTFOUND;
+
+        -- Log shuttle details
+        DBMS_OUTPUT.PUT_LINE('Available Shuttle: ' || v_shuttle_id || ' for Route: ' || v_route_pickup || ' -> ' || v_route_dropoff);
+
+        -- Open the cursor for users on the waitlist for the route
+        OPEN waitlist_users(v_route_pickup, v_route_dropoff);
+
+        LOOP
+            -- Fetch a user from the waitlist
+            FETCH waitlist_users INTO v_waitlist_user_id;
+            EXIT WHEN waitlist_users%NOTFOUND;
+
+            -- Log notification details
+            DBMS_OUTPUT.PUT_LINE('Notifying User: ' || v_waitlist_user_id || ' for Route: ' || v_route_pickup || ' -> ' || v_route_dropoff);
+
+            -- Update the user's ride status to 'Booked'
+            UPDATE rides
+            SET status = 'Booked'
+            WHERE user_id = v_waitlist_user_id
+              AND pickupLocationId = v_route_pickup
+              AND dropoffLocationId = v_route_dropoff
+              AND status = 'Waitlisted';
+
+            -- Commit the update
+            COMMIT;
+
+            -- Break the inner loop after notifying one user
+            EXIT;
+        END LOOP;
+
+        -- Close the waitlist cursor
+        CLOSE waitlist_users;
+    END LOOP;
+
+    -- Close the shuttle cursor
+    CLOSE available_shuttles;
+
+    DBMS_OUTPUT.PUT_LINE('Waitlist notifications completed successfully.');
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+        RAISE;
+END;
+/
