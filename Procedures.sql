@@ -103,7 +103,7 @@ BEGIN
 END;
 /
 
-/*Procedure 4: Emergency notifications.This procedure handles emergency notifications in the shuttle management system. It sends alerts to users and administrators when an emergency (e.g., breakdown, accident, or maintenance issue) occurs, ensuring that all stakeholders are promptly informed.*/
+/*Procedure 4: Emergency notifications.This procedure handles emergency notifications in the shuttle management system. It will  be sending alerts to users and administrators when an emergency (e.g., breakdown, accident, or maintenance issue) occurs, ensuring that all stakeholders are promptly informed.*/
 
 CREATE OR REPLACE PROCEDURE emergency_notifications (
     p_shuttle_id IN shuttles.shuttle_id%TYPE,
