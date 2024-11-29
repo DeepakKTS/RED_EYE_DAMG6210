@@ -102,3 +102,73 @@ BEGIN
     CLOSE available_shuttles;
 END;
 /
+
+/*Procedure 4: Emergency notifications.This procedure handles emergency notifications in the shuttle management system. It will  be sending alerts to users and administrators when an emergency (e.g., breakdown, accident, or maintenance issue) occurs, ensuring that all stakeholders are promptly informed.*/
+
+CREATE OR REPLACE PROCEDURE emergency_notifications (
+    p_shuttle_id IN shuttles.shuttle_id%TYPE,
+    p_emergency_type IN VARCHAR2
+) IS
+    -- Variables
+    v_shuttle_details shuttles%ROWTYPE;
+    v_admin_email VARCHAR2(100);
+    v_user_emails SYS.ODCIVARCHAR2LIST := SYS.ODCIVARCHAR2LIST(); -- Array for user emails
+
+    -- Cursor to get affected users
+    CURSOR affected_users IS
+        SELECT u.email
+        FROM users u
+        JOIN rides r ON u.user_id = r.user_id
+        JOIN trips t ON r.trip_id = t.trip_id
+        WHERE t.shuttle_id = p_shuttle_id
+          AND t.startTime <= SYSDATE
+          AND t.endTime >= SYSDATE;
+
+BEGIN
+    -- Fetch shuttle details
+    SELECT *
+    INTO v_shuttle_details
+    FROM shuttles
+    WHERE shuttle_id = p_shuttle_id;
+
+    -- Log the shuttle details
+    DBMS_OUTPUT.PUT_LINE('Shuttle Details: ' || v_shuttle_details.shuttle_id || ' - ' || v_shuttle_details.model);
+
+    -- Fetch admin email (for simplicity, assume there's a single admin)
+    SELECT email
+    INTO v_admin_email
+    FROM users
+    WHERE userType = 'Admin'
+    AND ROWNUM = 1;
+
+    DBMS_OUTPUT.PUT_LINE('Admin Email: ' || v_admin_email);
+
+    -- Notify admin about the emergency
+    DBMS_OUTPUT.PUT_LINE('Sending notification to Admin: ' || v_admin_email);
+    DBMS_OUTPUT.PUT_LINE('Emergency Type: ' || p_emergency_type);
+
+    -- Notify affected users
+    OPEN affected_users;
+    LOOP
+        FETCH affected_users BULK COLLECT INTO v_user_emails LIMIT 100;
+
+        EXIT WHEN v_user_emails.COUNT = 0;
+
+        FOR i IN 1 .. v_user_emails.COUNT LOOP
+            DBMS_OUTPUT.PUT_LINE('Sending notification to User: ' || v_user_emails(i));
+            DBMS_OUTPUT.PUT_LINE('Emergency Type: ' || p_emergency_type);
+        END LOOP;
+    END LOOP;
+    CLOSE affected_users;
+
+    DBMS_OUTPUT.PUT_LINE('Emergency notifications sent successfully for shuttle: ' || p_shuttle_id);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Shuttle or admin not found for the provided details.');
+        RAISE_APPLICATION_ERROR(-20015, 'Shuttle or admin not found.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+        RAISE;
+END;
+/
