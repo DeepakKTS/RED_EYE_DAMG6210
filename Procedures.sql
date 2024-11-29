@@ -46,3 +46,59 @@ BEGIN
     CLOSE overdue_shuttles;
 END;
 /
+
+/*Procedure 2: PRIORITY_ROUTING.The PRIORITY_ROUTING procedure dynamically prioritizes shuttle
+routes based on factors such as demand, shuttle availability, and time of day. 
+This ensures that high-demand routes are assigned more shuttles and resources, optimizing operational efficiency.
+*/
+
+CREATE OR REPLACE PROCEDURE priority_routing IS
+    CURSOR route_demand IS
+        SELECT r.pickupLocationId, r.dropoffLocationId, COUNT(r.ride_id) AS total_rides
+        FROM rides r
+        JOIN trips t ON r.trip_id = t.trip_id
+        WHERE t.startTime BETWEEN SYSDATE - INTERVAL '1' DAY AND SYSDATE -- Analyze recent demand
+        GROUP BY r.pickupLocationId, r.dropoffLocationId
+        ORDER BY total_rides DESC; -- Prioritize high-demand routes
+
+    v_pickup_location rides.pickupLocationId%TYPE;
+    v_dropoff_location rides.dropoffLocationId%TYPE;
+    v_total_rides NUMBER;
+    v_shuttle_id shuttles.shuttle_id%TYPE;
+
+    CURSOR available_shuttles IS
+        SELECT shuttle_id
+        FROM shuttles
+        WHERE shuttle_id NOT IN (
+            SELECT shuttle_id
+            FROM trips
+            WHERE startTime BETWEEN SYSDATE AND SYSDATE + INTERVAL '1' DAY
+        ); -- Only consider shuttles not currently scheduled
+BEGIN
+    OPEN route_demand;
+    OPEN available_shuttles;
+
+    LOOP
+        FETCH route_demand INTO v_pickup_location, v_dropoff_location, v_total_rides;
+        EXIT WHEN route_demand%NOTFOUND;
+
+        FETCH available_shuttles INTO v_shuttle_id;
+        EXIT WHEN available_shuttles%NOTFOUND; -- Stop if no more shuttles are available
+
+        -- Assign the shuttle to the route
+        INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+        VALUES (
+            'T_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+            SYSDATE + INTERVAL '1' HOUR, -- Schedule one hour from now
+            SYSDATE + INTERVAL '2' HOUR, -- Ends two hours from now
+            'Scheduled',
+            v_shuttle_id
+        );
+
+        DBMS_OUTPUT.PUT_LINE('Assigned Shuttle: ' || v_shuttle_id || ' to Route: ' || v_pickup_location || ' -> ' || v_dropoff_location);
+    END LOOP;
+
+    CLOSE route_demand;
+    CLOSE available_shuttles;
+END;
+/
