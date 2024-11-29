@@ -259,3 +259,68 @@ EXCEPTION
         RAISE;
 END;
 /
+
+/*Procedure 6:ROUTE_CAPACITY_OPTIMIZATION. The ROUTE_CAPACITY_OPTIMIZATION procedure optimizes route assignments by analyzing capacity utilization. 
+It reallocates shuttles from underutilized routes to high-demand routes, ensuring efficient use of resources.*/
+
+CREATE OR REPLACE PROCEDURE route_capacity_optimization IS
+    CURSOR high_demand_routes IS
+        SELECT pickupLocationId, dropoffLocationId, COUNT(*) AS demand
+        FROM rides
+        WHERE status = 'Waitlisted'
+        GROUP BY pickupLocationId, dropoffLocationId
+        ORDER BY demand DESC;
+
+    CURSOR underutilized_shuttles IS
+        SELECT s.shuttle_id, s.model, COUNT(r.ride_id) AS current_rides
+        FROM shuttles s
+        LEFT JOIN trips t ON s.shuttle_id = t.shuttle_id
+        LEFT JOIN rides r ON t.trip_id = r.trip_id
+        WHERE t.startTime >= SYSDATE
+        GROUP BY s.shuttle_id, s.model
+        HAVING COUNT(r.ride_id) < (s.capacity * 0.5) -- Less than 50% utilization
+        ORDER BY current_rides ASC;
+
+    v_route_pickup VARCHAR2(50);
+    v_route_dropoff VARCHAR2(50);
+    v_demand NUMBER;
+    v_shuttle_id shuttles.shuttle_id%TYPE;
+    v_model shuttles.model%TYPE;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Starting ROUTE_CAPACITY_OPTIMIZATION procedure...');
+
+    -- Process high-demand routes
+    FOR high_demand IN high_demand_routes LOOP
+        v_route_pickup := high_demand.pickupLocationId;
+        v_route_dropoff := high_demand.dropoffLocationId;
+        v_demand := high_demand.demand;
+
+        -- Log the high-demand route
+        DBMS_OUTPUT.PUT_LINE('High-Demand Route: ' || v_route_pickup || ' -> ' || v_route_dropoff || ' with ' || v_demand || ' waitlisted rides.');
+
+        -- Process underutilized shuttles for reassignment
+        FOR underutilized IN underutilized_shuttles LOOP
+            v_shuttle_id := underutilized.shuttle_id;
+            v_model := underutilized.model;
+
+            -- Log the shuttle reassignment
+            DBMS_OUTPUT.PUT_LINE('Reassigning Shuttle: ' || v_shuttle_id || ' (' || v_model || ') to Route: ' || v_route_pickup || ' -> ' || v_route_dropoff);
+
+            -- Update the shuttle assignment
+            INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+            VALUES (
+                'TRIP_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+                SYSDATE + INTERVAL '1' HOUR,
+                SYSDATE + INTERVAL '2' HOUR,
+                'Scheduled',
+                v_shuttle_id
+            );
+
+            -- Exit the loop once the shuttle is reassigned to avoid over-allocation
+            EXIT;
+        END LOOP;
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('Route capacity optimization completed successfully.');
+END;
+/
