@@ -324,3 +324,84 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Route capacity optimization completed successfully.');
 END;
 /
+/*Procedure 7:Auto Schedule Rides.The AUTO_SCHEDULE_RIDES procedure automates the assignment of unscheduled rides to available trips based on predefined conditions. The procedure ensures operational efficiency by scheduling rides in a way that matches their pickup and drop-off locations to appropriate trips. It updates the status of rides and assigns them to trips dynamically. */
+CREATE OR REPLACE PROCEDURE auto_schedule_rides IS
+    CURSOR unscheduled_rides IS
+        SELECT ride_id, pickupLocationId, dropoffLocationId
+        FROM rides
+        WHERE status = 'Unscheduled';
+
+    v_trip_id trips.trip_id%TYPE;
+    v_shuttle_id trips.shuttle_id%TYPE;
+    v_ride_id rides.ride_id%TYPE;
+    v_pickupLocationId rides.pickupLocationId%TYPE;
+    v_dropoffLocationId rides.dropoffLocationId%TYPE;
+    v_capacity_remaining NUMBER;
+BEGIN
+    FOR ride_record IN unscheduled_rides LOOP
+        v_ride_id := ride_record.ride_id;
+        v_pickupLocationId := ride_record.pickupLocationId;
+        v_dropoffLocationId := ride_record.dropoffLocationId;
+
+        -- Find a suitable trip with capacity
+        BEGIN
+            SELECT t.trip_id, t.shuttle_id, 
+                   (5 - COUNT(r.ride_id)) AS remaining_capacity -- Assuming a max capacity of 5 rides per trip
+            INTO v_trip_id, v_shuttle_id, v_capacity_remaining
+            FROM trips t
+            LEFT JOIN rides r ON r.trip_id = t.trip_id
+            WHERE t.status = 'Scheduled'
+            GROUP BY t.trip_id, t.shuttle_id
+            HAVING COUNT(r.ride_id) < 5 -- Change '5' to the actual trip capacity, if known
+            FETCH FIRST ROW ONLY;
+
+            -- If a trip is found, assign the ride
+            UPDATE rides
+            SET trip_id = v_trip_id,
+                status = 'Scheduled'
+            WHERE ride_id = v_ride_id;
+
+            DBMS_OUTPUT.PUT_LINE('Ride ' || v_ride_id || ' assigned to Trip ' || v_trip_id);
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('No available trip found for Ride ' || v_ride_id);
+        END;
+    END LOOP;
+END;
+/
+/* TO CHECK Auto Schedule Rides Procedure
+TRUNCATE TABLE TRIPS;
+TRUNCATE TABLE RIDES;
+
+SELECT * FROM trips;
+SELECT * FROM rides;
+SET SERVEROUTPUT ON;
+BEGIN
+    auto_schedule_rides;
+END;
+
+
+SELECT * FROM rides WHERE status = 'Scheduled';
+
+INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+VALUES ('T3', TO_TIMESTAMP('2024-12-01 05:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+              TO_TIMESTAMP('2024-12-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+              'Scheduled', 'S3');
+
+INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+VALUES ('T4', TO_TIMESTAMP('2024-12-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+              TO_TIMESTAMP('2024-12-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'),
+              'Scheduled', 'S4');
+
+-- Insert unscheduled rides linked to the placeholder trips
+INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+VALUES ('R4', 'L1', 'L3', 'T3', 'Unscheduled');
+
+INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+VALUES ('R5', 'L2', 'L4', 'T4', 'Unscheduled');
+
+INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+VALUES ('R6', 'L3', 'L5', 'T4', 'Unscheduled');
+
+
+*/
