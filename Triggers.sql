@@ -71,26 +71,24 @@ END;
 /
 /* Trigger 4: Idle Time Management
 This trigger ensures that shuttles have a minimum idle time of 2 hours between consecutive shifts, optimizing resource usage while avoiding overuse.*/
-CREATE OR REPLACE TRIGGER enforce_vehicle_mileage_constraint
+CREATE OR REPLACE TRIGGER enforce_idle_time_management
 BEFORE INSERT OR UPDATE ON shifts
 FOR EACH ROW
 DECLARE
-    mileage_threshold NUMBER := 100000; -- Example mileage threshold
-    current_mileage NUMBER;
+    idle_time_limit NUMBER := 2 / 24; -- Max idle time in days (2 hours = 2/24 days)
+    v_last_end_time TIMESTAMP;
 BEGIN
-    -- Fetch the current mileage of the shuttle
-    BEGIN
-        SELECT mileage INTO current_mileage
-        FROM shuttles
-        WHERE shuttle_id = :NEW.shuttle_id;
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            RAISE_APPLICATION_ERROR(-20007, 'Shuttle ID not found in shuttles table.');
-    END;
+    -- Fetch the end time of the most recent shift for the same shuttle
+    SELECT MAX(endTime) INTO v_last_end_time
+    FROM shifts
+    WHERE shuttle_id = :NEW.shuttle_id
+      AND shift_id != :NEW.shift_id; -- Exclude the current shift being inserted/updated
 
-    -- Check if the mileage exceeds the threshold
-    IF current_mileage > mileage_threshold THEN
-        RAISE_APPLICATION_ERROR(-20004, 'Shuttle cannot be assigned as mileage exceeds the threshold.');
+    -- Enforce the 2-hour idle time rule
+    IF v_last_end_time IS NOT NULL THEN
+        IF :NEW.startTime < v_last_end_time + idle_time_limit THEN
+            RAISE_APPLICATION_ERROR(-20005, 'Shuttle idle time must be at least 2 hours.');
+        END IF;
     END IF;
 END;
 /
