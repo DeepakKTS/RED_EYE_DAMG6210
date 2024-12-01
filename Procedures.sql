@@ -407,10 +407,6 @@ VALUES ('R6', 'L3', 'L5', 'T4', 'Unscheduled');
 
 */
 
-
-
-
-
 --Procedure 8 - REASSIGN_VEHICLE_DURING_SHIFT 
 
 CREATE OR REPLACE PROCEDURE REASSIGN_VEHICLE_DURING_SHIFT (
@@ -475,6 +471,42 @@ EXCEPTION
         -- Handle unexpected errors
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20001, 'An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+--Procedure 9 MONITOR_FUEL_EFFICIENCY
+-- Purpose: This procedure flags shuttles with mileage below the specified efficiency threshold
+-- and inserts the flagged data into the fuel_efficiency_log table for monitoring purposes.
+
+CREATE OR REPLACE PROCEDURE MONITOR_FUEL_EFFICIENCY (
+    efficiency_threshold IN NUMBER  -- Expected efficiency threshold
+) IS
+    CURSOR inefficient_shuttles IS
+        SELECT shuttle_id, model, mileage
+        FROM shuttles
+        WHERE mileage < efficiency_threshold;
+
+    inefficient_record inefficient_shuttles%ROWTYPE;
+BEGIN
+    OPEN inefficient_shuttles;
+
+    LOOP
+        FETCH inefficient_shuttles INTO inefficient_record;
+        EXIT WHEN inefficient_shuttles%NOTFOUND;
+
+        INSERT INTO fuel_efficiency_log (
+            shuttle_id, model, mileage, flagged_date
+        ) VALUES (
+            inefficient_record.shuttle_id,
+            inefficient_record.model,
+            inefficient_record.mileage,
+            SYSDATE
+        );
+    END LOOP;
+
+    CLOSE inefficient_shuttles;
+
+    DBMS_OUTPUT.PUT_LINE('Fuel efficiency monitoring completed.');
 END;
 /
 
