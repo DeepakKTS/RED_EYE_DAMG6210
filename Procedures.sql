@@ -324,6 +324,7 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Route capacity optimization completed successfully.');
 END;
 /
+
 /*Procedure 7:Auto Schedule Rides.The AUTO_SCHEDULE_RIDES procedure automates the assignment of unscheduled rides to available trips based on predefined conditions. The procedure ensures operational efficiency by scheduling rides in a way that matches their pickup and drop-off locations to appropriate trips. It updates the status of rides and assigns them to trips dynamically. */
 CREATE OR REPLACE PROCEDURE auto_schedule_rides IS
     CURSOR unscheduled_rides IS
@@ -405,3 +406,107 @@ VALUES ('R6', 'L3', 'L5', 'T4', 'Unscheduled');
 
 
 */
+
+--Procedure 8 - REASSIGN_VEHICLE_DURING_SHIFT 
+
+CREATE OR REPLACE PROCEDURE REASSIGN_VEHICLE_DURING_SHIFT (
+    shift_id IN VARCHAR2  -- ID of the shift that needs vehicle reassignment
+) IS
+    v_current_shuttle_id VARCHAR2(50);  -- Current shuttle assigned to the shift
+    v_new_shuttle_id VARCHAR2(50);      -- New shuttle to be assigned
+    v_is_under_maintenance NUMBER;      -- Variable to store maintenance check result
+BEGIN
+    -- Step 1: Retrieve the current shuttle assigned to the shift
+    SELECT shuttle_id
+    INTO v_current_shuttle_id
+    FROM shifts
+    WHERE shift_id = shift_id;
+
+    -- Step 2: Check if the current shuttle is under maintenance
+    SELECT COUNT(*)
+    INTO v_is_under_maintenance
+    FROM maintenance_schedules
+    WHERE shuttle_id = v_current_shuttle_id
+      AND maintenanceDate = TRUNC(SYSDATE);
+
+    -- Step 3: If the shuttle is under maintenance, reassign it
+    IF v_is_under_maintenance > 0 THEN
+        -- Find a new available shuttle
+        SELECT shuttle_id
+        INTO v_new_shuttle_id
+        FROM shuttles s
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM maintenance_schedules m
+            WHERE s.shuttle_id = m.shuttle_id
+              AND m.maintenanceDate = TRUNC(SYSDATE)
+        )
+          AND shuttle_id != v_current_shuttle_id
+        FETCH FIRST ROW ONLY;
+
+        -- Update the shift with the new shuttle
+        UPDATE shifts
+        SET shuttle_id = v_new_shuttle_id
+        WHERE shift_id = shift_id;
+
+        -- Log the reassignment in the reassignment_log table
+        INSERT INTO reassignment_log (shift_id, old_shuttle_id, new_shuttle_id, reassignment_time)
+        VALUES (shift_id, v_current_shuttle_id, v_new_shuttle_id, SYSDATE);
+
+        -- Commit the changes
+        COMMIT;
+
+        -- Print a success message
+        DBMS_OUTPUT.PUT_LINE('Shuttle reassigned successfully for shift ID: ' || shift_id);
+    ELSE
+        -- Print a message if no reassignment is needed
+        DBMS_OUTPUT.PUT_LINE('No reassignment needed for shift ID: ' || shift_id);
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        -- Handle cases where no available shuttle is found
+        RAISE_APPLICATION_ERROR(-20002, 'No available shuttle found for reassignment.');
+    WHEN OTHERS THEN
+        -- Handle unexpected errors
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20001, 'An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+--Procedure 9 MONITOR_FUEL_EFFICIENCY
+-- Purpose: This procedure flags shuttles with mileage below the specified efficiency threshold
+-- and inserts the flagged data into the fuel_efficiency_log table for monitoring purposes.
+
+CREATE OR REPLACE PROCEDURE MONITOR_FUEL_EFFICIENCY (
+    efficiency_threshold IN NUMBER  -- Expected efficiency threshold
+) IS
+    CURSOR inefficient_shuttles IS
+        SELECT shuttle_id, model, mileage
+        FROM shuttles
+        WHERE mileage < efficiency_threshold;
+
+    inefficient_record inefficient_shuttles%ROWTYPE;
+BEGIN
+    OPEN inefficient_shuttles;
+
+    LOOP
+        FETCH inefficient_shuttles INTO inefficient_record;
+        EXIT WHEN inefficient_shuttles%NOTFOUND;
+
+        INSERT INTO fuel_efficiency_log (
+            shuttle_id, model, mileage, flagged_date
+        ) VALUES (
+            inefficient_record.shuttle_id,
+            inefficient_record.model,
+            inefficient_record.mileage,
+            SYSDATE
+        );
+    END LOOP;
+
+    CLOSE inefficient_shuttles;
+
+    DBMS_OUTPUT.PUT_LINE('Fuel efficiency monitoring completed.');
+END;
+/
+
