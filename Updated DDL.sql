@@ -1,5 +1,5 @@
 --UPDATED DDL--
-
+/*DDL Changes made in 3 table*/
 BEGIN
     FOR table_name IN (
         SELECT table_name 
