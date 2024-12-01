@@ -119,3 +119,15 @@ BEGIN
     END IF;
 END;
 /
+/*Trigger 6: Enforce pickup location 
+Ttrigger ensures that any INSERT or UPDATE operation on the rides table automatically sets the 
+pickupLocationId to 'L6'(snell) regardless of the input provided. 
+This enforces a consistent pickup location for all ride records..*/
+create or replace TRIGGER enforce_pickup_location
+BEFORE INSERT OR UPDATE ON rides
+FOR EACH ROW
+BEGIN
+  :NEW.pickupLocationId := 'L6';
+END;
+/
+ 
