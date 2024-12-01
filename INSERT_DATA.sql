@@ -44,11 +44,12 @@ INSERT INTO locations VALUES ('L5', 'West Campus', '202 West St', '40.7132,-74.0
 COMMIT;
 
 -- Shuttles
-INSERT INTO shuttles VALUES ('S1', 'Model X', 30, 'ABC123');
-INSERT INTO shuttles VALUES ('S2', 'Model Y', 25, 'DEF456');
-INSERT INTO shuttles VALUES ('S3', 'Model Z', 20, 'GHI789');
-INSERT INTO shuttles VALUES ('S4', 'Model A', 15, 'JKL012');
-INSERT INTO shuttles VALUES ('S5', 'Model B', 10, 'MNO345');
+INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate, mileage) VALUES ('S1', 'Model X', 30, 'ABC123', 25);
+INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate, mileage) VALUES ('S2', 'Model Y', 25, 'DEF456', 20);
+INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate, mileage) VALUES ('S3', 'Model Z', 20, 'GHI789', 18);
+INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate, mileage) VALUES ('S4', 'Model A', 15, 'JKL012', 15);
+INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate, mileage) VALUES ('S5', 'Model B', 10, 'MNO345', 12);
+
 COMMIT;
 
 -- Trips
@@ -103,3 +104,6 @@ INSERT INTO maintenance_schedules VALUES ('M3', 'S3', TO_DATE('2024-11-07', 'YYY
 INSERT INTO maintenance_schedules VALUES ('M4', 'S4', TO_DATE('2024-11-08', 'YYYY-MM-DD'), 'Engine check');
 INSERT INTO maintenance_schedules VALUES ('M5', 'S5', TO_DATE('2024-11-09', 'YYYY-MM-DD'), 'Brake inspection');
 COMMIT;
+
+
+
