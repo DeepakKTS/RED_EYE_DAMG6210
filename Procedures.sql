@@ -510,3 +510,123 @@ BEGIN
 END;
 /
 
+
+
+CREATE OR REPLACE PROCEDURE ASSIGN_BACKUP_DRIVERS AS
+    CURSOR unassigned_shifts IS
+        SELECT s.shift_id, s.shuttle_id, s.startTime, s.endTime
+        FROM shifts s
+        LEFT JOIN drivers d ON s.shift_id = d.shift_id
+        WHERE d.driver_id IS NULL;
+
+    available_drivers SYS_REFCURSOR;
+    shift_record unassigned_shifts%ROWTYPE;
+    backup_driver_id VARCHAR2(50);
+BEGIN
+    -- Open the cursor to find unassigned shifts
+    OPEN unassigned_shifts;
+
+    LOOP
+        FETCH unassigned_shifts INTO shift_record;
+        EXIT WHEN unassigned_shifts%NOTFOUND;
+
+        -- Find an available driver for the current shift
+        OPEN available_drivers FOR
+            SELECT driver_id
+            FROM drivers
+            WHERE driver_id NOT IN (
+                SELECT driver_id
+                FROM shifts
+                WHERE (startTime <= shift_record.endTime AND endTime >= shift_record.startTime)
+            )
+            AND driver_id NOT IN (
+                SELECT backup_driver_id
+                FROM shifts
+                WHERE shuttle_id = shift_record.shuttle_id
+            )
+            AND ROWNUM = 1; -- Assign the first available driver
+
+        FETCH available_drivers INTO backup_driver_id;
+
+        IF backup_driver_id IS NOT NULL THEN
+            -- Assign the backup driver to the shift
+            UPDATE shifts
+            SET backup_driver_id = backup_driver_id
+            WHERE shift_id = shift_record.shift_id;
+
+            DBMS_OUTPUT.PUT_LINE('Backup driver ' || backup_driver_id || ' assigned to shift ' || shift_record.shift_id);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('No available backup driver for shift ' || shift_record.shift_id);
+        END IF;
+
+        CLOSE available_drivers;
+    END LOOP;
+
+    CLOSE unassigned_shifts;
+
+    DBMS_OUTPUT.PUT_LINE('Backup driver assignment process completed.');
+END;
+/
+
+
+
+--Procedure - 10
+-- Procedure: ASSIGN_BACKUP_DRIVERS
+-- Purpose: Assigns backup drivers to unassigned shifts in the `shifts` table. 
+-- Ensures that available drivers are not already assigned to overlapping shifts. 
+-- Logs the assignments and handles exceptions for unavailable drivers or unexpected errors.
+
+
+CREATE OR REPLACE PROCEDURE ASSIGN_BACKUP_DRIVERS AS
+    -- Cursor to fetch shifts without assigned drivers
+    CURSOR unassigned_shifts IS
+        SELECT shift_id, shuttle_id, startTime, endTime
+        FROM shifts
+        WHERE driver_id IS NULL; -- Select shifts without an assigned primary driver
+
+    available_driver_id drivers.driver_id%TYPE; -- Variable to store the available driver ID
+    shift_record unassigned_shifts%ROWTYPE; -- Row type for cursor
+BEGIN
+    -- Open the cursor to fetch unassigned shifts
+    OPEN unassigned_shifts;
+
+    LOOP
+        FETCH unassigned_shifts INTO shift_record;
+        EXIT WHEN unassigned_shifts%NOTFOUND;
+
+        -- Find the first available driver who is not already assigned to overlapping shifts
+        BEGIN
+            SELECT d.driver_id
+            INTO available_driver_id
+            FROM drivers d
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM shifts s
+                WHERE s.driver_id = d.driver_id
+                AND (s.startTime <= shift_record.endTime AND s.endTime >= shift_record.startTime)
+            )
+            AND ROWNUM = 1; -- Fetch the first available driver
+
+            -- Assign the available driver to the shift
+            UPDATE shifts
+            SET driver_id = available_driver_id
+            WHERE shift_id = shift_record.shift_id;
+
+            -- Log the assignment
+            DBMS_OUTPUT.PUT_LINE('Backup driver ' || available_driver_id || ' assigned to shift ' || shift_record.shift_id);
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                DBMS_OUTPUT.PUT_LINE('No available driver for shift ' || shift_record.shift_id);
+        END;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE unassigned_shifts;
+
+    -- Output completion message
+    DBMS_OUTPUT.PUT_LINE('Backup driver assignment process completed.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
