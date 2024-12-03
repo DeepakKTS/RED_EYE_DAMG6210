@@ -322,4 +322,51 @@ VALUES ('MNT2', 'S10', SYSDATE - INTERVAL '3' DAY, 'Last maintenance');
 SELECT * FROM shuttles_due_for_maintenance;
 */
 
+/*FOR MANAGER
+VIEW: SHUTTLE_DUE_FOR_MAINTENANCE*/
+
+
+CREATE OR REPLACE VIEW shuttles_due_for_maintenance AS
+SELECT 
+    s.shuttle_id,
+    s.model,
+    s.licensePlate,
+    s.total_mileage,
+    smr.last_maintenance_mileage,
+    smr.mileage_added,
+    (s.total_mileage - COALESCE(smr.last_maintenance_mileage, 0)) AS mileage_since_last_maintenance,
+    CASE 
+        WHEN smr.mileage_added - COALESCE(smr.last_maintenance_mileage, 0) >= 100 THEN 'Required'
+        ELSE 'Not Required'
+    END AS maintenance_status,
+    COALESCE(TO_CHAR(ms.maintenanceDate, 'YYYY-MM-DD'), 'Not Scheduled') AS next_maintenance_date,
+    CASE 
+        WHEN s.unusable_until > SYSDATE THEN 'Unusable'
+        ELSE 'Available'
+    END AS usability_status
+FROM 
+    shuttles s
+LEFT JOIN 
+    (SELECT 
+         shuttle_id, 
+         MAX(last_maintenance_mileage) AS last_maintenance_mileage,
+         SUM(mileage_added) AS mileage_added
+     FROM 
+         shuttle_mileage_records
+     GROUP BY shuttle_id) smr
+ON s.shuttle_id = smr.shuttle_id
+LEFT JOIN 
+    maintenance_schedules ms 
+ON 
+    s.shuttle_id = ms.shuttle_id 
+    AND ms.maintenanceDate >= SYSDATE;
     
+BEGIN
+    UPDATE_MILEAGE_AND_SCHEDULE_MAINTENANCE('S11', 50); -- Add mileage
+END;
+
+SELECT * FROM shuttle_mileage_records WHERE shuttle_id = 'S11';
+
+SELECT * FROM shuttles_due_for_maintenance WHERE shuttle_id = 'S11';
+
+

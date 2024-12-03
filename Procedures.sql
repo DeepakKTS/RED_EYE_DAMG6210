@@ -654,3 +654,116 @@ END;
 /
 
 SELECT * FROM maintenance_schedules WHERE shuttle_id = 'S10';*/
+
+
+/*PROCEDURE FOR Update_Mileage_and _Schedule_Maintenance*/
+CREATE OR REPLACE PROCEDURE UPDATE_MILEAGE_AND_SCHEDULE_MAINTENANCE(
+    p_shuttle_id IN shuttles.shuttle_id%TYPE,
+    p_mileage_added IN shuttle_mileage_records.mileage_added%TYPE
+) IS
+    v_total_mileage shuttles.total_mileage%TYPE;
+    v_last_maintenance_mileage shuttle_mileage_records.last_maintenance_mileage%TYPE;
+    v_next_maintenance_date DATE;
+    v_record_exists NUMBER;
+BEGIN
+    -- Check if the shuttle exists
+    BEGIN
+        SELECT total_mileage
+        INTO v_total_mileage
+        FROM shuttles
+        WHERE shuttle_id = p_shuttle_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20001, 'Shuttle ID does not exist: ' || p_shuttle_id);
+    END;
+
+    -- Check if a record exists for the shuttle in shuttle_mileage_records
+    SELECT COUNT(*)
+    INTO v_record_exists
+    FROM shuttle_mileage_records
+    WHERE shuttle_id = p_shuttle_id;
+
+    IF v_record_exists > 0 THEN
+        -- Update existing mileage record
+        UPDATE shuttle_mileage_records
+        SET mileage_added = mileage_added + p_mileage_added,
+            updated_at = SYSDATE
+        WHERE shuttle_id = p_shuttle_id;
+    ELSE
+        -- Insert new mileage record
+        INSERT INTO shuttle_mileage_records (
+            record_id, shuttle_id, mileage_added, updated_at, last_maintenance_mileage
+        )
+        VALUES (
+            'REC_' || p_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+            p_shuttle_id,
+            p_mileage_added,
+            SYSDATE,
+            (SELECT COALESCE(MAX(last_maintenance_mileage), 0)
+             FROM shuttle_mileage_records
+             WHERE shuttle_id = p_shuttle_id)
+        );
+    END IF;
+
+    -- Update the total mileage of the shuttle
+    UPDATE shuttles
+    SET total_mileage = total_mileage + p_mileage_added
+    WHERE shuttle_id = p_shuttle_id;
+
+    -- Calculate the updated total mileage
+    SELECT total_mileage
+    INTO v_total_mileage
+    FROM shuttles
+    WHERE shuttle_id = p_shuttle_id;
+
+    -- Check if maintenance is required
+    SELECT COALESCE(MAX(last_maintenance_mileage), 0)
+    INTO v_last_maintenance_mileage
+    FROM shuttle_mileage_records
+    WHERE shuttle_id = p_shuttle_id;
+
+    IF (v_total_mileage - v_last_maintenance_mileage) >= 100 THEN
+        -- Schedule maintenance
+        v_next_maintenance_date := SYSDATE + INTERVAL '7' DAY; -- One week from now
+
+        INSERT INTO maintenance_schedules (
+            maintenance_id, shuttle_id, maintenanceDate, description
+        )
+        VALUES (
+            'MNT_' || p_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
+            p_shuttle_id,
+            v_next_maintenance_date,
+            'Maintenance scheduled automatically'
+        );
+
+        -- Update the shuttle's unusable status
+        UPDATE shuttles
+        SET unusable_until = SYSDATE + INTERVAL '24' HOUR
+        WHERE shuttle_id = p_shuttle_id;
+
+        DBMS_OUTPUT.PUT_LINE('Maintenance scheduled for shuttle: ' || p_shuttle_id);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No maintenance required for shuttle: ' || p_shuttle_id);
+    END IF;
+
+END;
+/
+
+/*SELECT * FROM SHUTTLES;
+SELECT * FROM shuttle_mileage_records;
+SELECT * FROM maintenance_schedules;
+
+INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+VALUES 
+('MNT11', 'S11', SYSDATE - 30, 'Routine Maintenance'),
+('MNT12', 'S12', SYSDATE - 25, 'Routine Maintenance');
+
+BEGIN
+    UPDATE_MILEAGE_AND_SCHEDULE_MAINTENANCE('S11', 50);
+END;
+
+SELECT * FROM shuttle_mileage_records WHERE shuttle_id = 'S11';
+SELECT * FROM shuttles WHERE shuttle_id = 'S11';
+SELECT * FROM maintenance_schedules WHERE shuttle_id = 'S11';
+
+SELECT * FROM shuttles_due_for_maintenance WHERE shuttle_id = 'S11';*/
