@@ -1,67 +1,4 @@
-CREATE OR REPLACE PACKAGE transport_management_pkg IS
-
-   -- -- Trips table operations
-   -- PROCEDURE manage_trip (
-   --    p_trip_id      IN VARCHAR2,
-   --    p_startTime    IN TIMESTAMP   DEFAULT NULL,
-   --    p_endTime      IN TIMESTAMP   DEFAULT NULL,
-   --    p_status       IN VARCHAR2    DEFAULT NULL,
-   --    p_shuttle_id   IN VARCHAR2    DEFAULT NULL,
-   --    p_action       IN VARCHAR2
-   -- );
-
-   -- -- Rides table operations
-   -- PROCEDURE manage_ride (
-   --    p_ride_id           IN VARCHAR2,
-   --    p_pickupLocationId  IN VARCHAR2 DEFAULT NULL,
-   --    p_dropoffLocationId IN VARCHAR2 DEFAULT NULL,
-   --    p_trip_id           IN VARCHAR2 DEFAULT NULL,
-   --    p_user_id           IN VARCHAR2 DEFAULT NULL,
-   --    p_status            IN VARCHAR2 DEFAULT NULL,
-   --    p_action            IN VARCHAR2
-   -- );
-
-   -- -- Drivers table operations
-   -- PROCEDURE manage_driver (
-   --    p_driver_id    IN VARCHAR2,
-   --    p_user_role_id IN VARCHAR2 DEFAULT NULL,
-   --    p_licenseNumber IN VARCHAR2 DEFAULT NULL,
-   --    p_tp_id        IN VARCHAR2 DEFAULT NULL,
-   --    p_action       IN VARCHAR2
-   -- );
-   -- Procedure to book a ride
-
-   PROCEDURE update_trip_status;
-
-   PROCEDURE book_ride (
-      p_dropoffLocationId IN VARCHAR2,
-      p_user_id           IN VARCHAR2
-   );
-
-   -- Procedure to create a new trip
-   PROCEDURE create_new_trip (
-      p_shuttle_id IN VARCHAR2
-   );
-
-   -- Procedure to start a trip
-   PROCEDURE start_trip (
-      p_trip_id IN VARCHAR2
-   );
-
-
-   -- Procedure to handle ride cancellations
-   PROCEDURE cancel_ride (
-      p_user_id IN VARCHAR2
-   );
-
-   -- Function to check shuttle availability
-   FUNCTION check_shuttle_availability (
-      p_date IN DATE
-   ) RETURN BOOLEAN;
-END transport_management_pkg;
-/
-
-CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
+CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
 
    -- Constants for status
    C_STATUS_AVAILABLE CONSTANT VARCHAR2(20) := 'AVAILABLE';
@@ -90,7 +27,57 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
       AND status = C_STATUS_IN_PROGRESS;
 
       
-   END;
+   RETURN;
+   END update_trip_status;
+
+   PROCEDURE create_new_trip (
+      p_shuttle_id IN VARCHAR2
+   ) IS
+      v_trip_id VARCHAR2(50);
+   BEGIN
+      v_trip_id := 'TRIP_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      
+      -- Debugging output
+      DBMS_OUTPUT.PUT_LINE('v_trip_id: ' || v_trip_id);
+      DBMS_OUTPUT.PUT_LINE('p_shuttle_id: ' || p_shuttle_id);
+      
+      INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+      VALUES (v_trip_id, SYSTIMESTAMP, NULL, C_STATUS_AVAILABLE, p_shuttle_id);
+   END create_new_trip;
+
+   PROCEDURE start_trip (
+      p_trip_id IN VARCHAR2,
+      p_shuttle_id IN VARCHAR2
+   ) IS
+      v_rider_count NUMBER;
+      v_start_time TIMESTAMP;
+      v_end_time TIMESTAMP;
+      v_record_id VARCHAR2(50);
+   BEGIN
+      
+      SELECT COUNT(ride_id) INTO v_rider_count FROM rides WHERE trip_id = p_trip_id AND status = C_STATUS_BOOKED;
+      SELECT starttime INTO v_start_time FROM trips where trip_id = p_trip_id;
+      
+      v_end_time := v_start_time + INTERVAL '2' MINUTE * v_rider_count;
+      
+      UPDATE trips SET status = C_STATUS_IN_PROGRESS, endTime = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
+      UPDATE rides 
+      SET status = C_STATUS_IN_PROGRESS 
+      WHERE trip_id IN (
+         SELECT trip_id 
+         FROM trips 
+         WHERE status = C_STATUS_IN_PROGRESS 
+      )
+      AND status = C_STATUS_BOOKED;
+
+      v_record_id := 'smr_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
+      VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
+
+      DBMS_OUTPUT.PUT_LINE('Started trip : ' || p_trip_id || ' that ends at : '|| v_end_time);
+      DBMS_OUTPUT.PUT_LINE('Added ' || 20 * v_rider_count ||  ' miles to : '|| p_shuttle_id);
+
+   END start_trip;
 
    PROCEDURE book_ride (
       p_dropoffLocationId IN VARCHAR2,
@@ -119,7 +106,7 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
          INTO v_current_ride_id
          FROM rides
          WHERE user_id = p_user_id
-         AND status = C_STATUS_BOOKED;
+         AND status IN (C_STATUS_BOOKED, C_STATUS_IN_PROGRESS);
 
          IF v_current_ride_id > 0 THEN
          DBMS_OUTPUT.PUT_LINE('User ' || p_user_id || ' already has an active ride.');
@@ -179,7 +166,7 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
 
          -- If the trip has been available for more than 3 minutes, mark it as started
          IF SYSDATE - v_trip_start_time > INTERVAL '3' MINUTE THEN
-            start_trip(v_trip_id);
+            start_trip(v_trip_id, v_shuttle_id);
             DBMS_OUTPUT.PUT_LINE('Trip has already started. Please try again');
             RETURN;
          END IF;
@@ -194,7 +181,7 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
 
          -- IF the trip has 2 riders start the trip
          IF v_rider_count + 1 = 2 THEN
-            start_trip(v_trip_id);
+            start_trip(v_trip_id, v_shuttle_id);
          END IF;
 
       ELSE
@@ -202,46 +189,7 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
       END IF;
    END book_ride;
 
-   PROCEDURE create_new_trip (
-      p_shuttle_id IN VARCHAR2
-   ) IS
-      v_trip_id VARCHAR2(50);
-   BEGIN
-      v_trip_id := 'TRIP_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
-      
-      -- Debugging output
-      DBMS_OUTPUT.PUT_LINE('v_trip_id: ' || v_trip_id);
-      DBMS_OUTPUT.PUT_LINE('p_shuttle_id: ' || p_shuttle_id);
-      
-      INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
-      VALUES (v_trip_id, SYSTIMESTAMP, NULL, C_STATUS_AVAILABLE, p_shuttle_id);
-   END create_new_trip;
-
-   PROCEDURE start_trip (
-      p_trip_id IN VARCHAR2
-   ) IS
-      v_rider_count NUMBER;
-      v_start_time TIMESTAMP;
-      v_end_time TIMESTAMP;
-   BEGIN
-      
-      SELECT COUNT(ride_id) INTO v_rider_count FROM rides WHERE trip_id = p_trip_id AND status = C_STATUS_BOOKED;
-      SELECT starttime INTO v_start_time FROM trips where trip_id = p_trip_id;
-      
-      v_end_time := v_start_time + INTERVAL '2' MINUTE * v_rider_count;
-      
-      UPDATE trips SET status = C_STATUS_IN_PROGRESS, endTime = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
-      UPDATE rides 
-      SET status = C_STATUS_IN_PROGRESS 
-      WHERE trip_id IN (
-         SELECT trip_id 
-         FROM trips 
-         WHERE status = C_STATUS_IN_PROGRESS 
-      )
-      AND status = C_STATUS_BOOKED;
-
-      DBMS_OUTPUT.PUT_LINE('Started trip : ' || p_trip_id);
-   END start_trip;
+   
 
    PROCEDURE cancel_ride (
       p_user_id IN VARCHAR2
@@ -290,5 +238,5 @@ CREATE OR REPLACE PACKAGE BODY transport_management_pkg IS
       SELECT COUNT(*) INTO v_count FROM shuttles WHERE shuttle_id NOT IN (SELECT shuttle_id FROM trips WHERE TRUNC(startTime) = TRUNC(p_date));
       RETURN v_count > 0;
    END check_shuttle_availability;
-END transport_management_pkg;
+END ride_management_pkg;
 /
