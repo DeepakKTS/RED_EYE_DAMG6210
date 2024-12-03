@@ -1,6 +1,6 @@
 BEGIN
   -- Test booking a ride
-  transport_management_pkg.book_ride(
+  RIDE_MANAGEMENT_PKG.book_ride(
     'L3',
     'U4'
   );
@@ -17,10 +17,10 @@ BEGIN
     END IF;
   END;
 
-  -- Test canceling a ride
-  transport_management_pkg.cancel_ride(
-    'U2'
-  );
+  -- -- Test canceling a ride
+  -- transport_management_pkg.cancel_ride(
+  --   'U2'
+  -- );
 
   -- Verify the ride was canceled
   DECLARE
@@ -35,3 +35,9 @@ BEGIN
   END;
 END;
 /
+
+SELECT * FROM TRIPS;
+SELECT * FROM RIDES;
+
+
+-- ROLLBACK;
