@@ -8,12 +8,6 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    C_STATUS_CANCELLED CONSTANT VARCHAR2(20) := 'CANCELLED';
 
 
-   PROCEDURE test_procedure IS
-   BEGIN 
-      DBMS_OUTPUT.PUT_LINE('I am getting called periodically');
-      RETURN;
-   END;
-
    PROCEDURE update_trip_status IS
    BEGIN
       -- Update trips to completed
@@ -77,8 +71,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       AND status = C_STATUS_BOOKED;
 
       v_record_id := 'smr_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
-      -- INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
-      -- VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
+      INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
+      VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
 
       DBMS_OUTPUT.PUT_LINE('Started trip : ' || p_trip_id || ' that ends at : '|| v_end_time);
       DBMS_OUTPUT.PUT_LINE('Added ' || 20 * v_rider_count ||  ' miles to : '|| p_shuttle_id);
