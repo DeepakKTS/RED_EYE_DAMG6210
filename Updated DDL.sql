@@ -1,3 +1,5 @@
+--_____ DDL ______//
+-- Drop existing data if any
 BEGIN
     FOR table_name IN (
         SELECT table_name 
@@ -5,23 +7,24 @@ BEGIN
         WHERE table_name IN (
             'SHIFTS', 'MAINTENANCE_SCHEDULES', 'THIRD_PARTY_SERVICES', 
             'DRIVERS', 'RIDES', 'TRIPS', 'SHUTTLES', 'LOCATIONS', 
-            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS', 'DRIVER_VERIFICATIONS'
+            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS'
         )
     ) LOOP
         EXECUTE IMMEDIATE 'DROP TABLE ' || table_name.table_name || ' CASCADE CONSTRAINTS';
+        DBMS_OUTPUT.PUT_LINE('Dropped table ' || table_name.table_name);
     END LOOP;
 END;
 /
- 
-//_____ DDL ______//
- 
--- DRIVER VERIFICATIONS TABLE (Must be created first as it is referenced by drivers)
-CREATE TABLE driver_verifications (
-    driver_id VARCHAR2(50) PRIMARY KEY,
-    background_check VARCHAR2(10)
+
+-- THIRD PARTY SERVICES TABLE (Created first as it is referenced by DRIVERS)
+CREATE TABLE third_party_services (
+    tp_id VARCHAR2(50) PRIMARY KEY,
+    service_name VARCHAR2(100)
 );
- 
--- USERS TABLE
+
+
+
+-- USERS TABLE (Created before USER_ROLES)
 CREATE TABLE users (
     user_id VARCHAR2(50) PRIMARY KEY,
     name VARCHAR2(100),
@@ -29,14 +32,14 @@ CREATE TABLE users (
     phone VARCHAR2(15),
     userType VARCHAR2(50)
 );
- 
--- ROLES TABLE
+
+-- ROLES TABLE (Created before USER_ROLES)
 CREATE TABLE roles (
     role_id VARCHAR2(50) PRIMARY KEY,
     name VARCHAR2(50)
 );
- 
--- USER ROLES TABLE
+
+-- USER ROLES TABLE (References ROLES and USERS)
 CREATE TABLE user_roles (
     user_role_id VARCHAR2(50) PRIMARY KEY,
     role_id VARCHAR2(50),
@@ -44,33 +47,35 @@ CREATE TABLE user_roles (
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
- 
--- DRIVERS TABLE (References driver_verifications and user_roles)
+
+-- DRIVERS TABLE (References DRIVER_VERIFICATIONS and USER_ROLES)
 CREATE TABLE drivers (
-    driver_id VARCHAR2(50) PRIMARY KEY,
-    user_role_id VARCHAR2(50),
+    driver_id VARCHAR2(50) PRIMARY KEY, 
+    verification_flag  VARCHAR2(50),
+    user_role_id VARCHAR2(50) UNIQUE,
     licenseNumber VARCHAR2(50) UNIQUE,
-    FOREIGN KEY (user_role_id) REFERENCES user_roles(user_role_id) ON DELETE SET NULL, -- User role removal nullifies driver reference
-    FOREIGN KEY (driver_id) REFERENCES driver_verifications(driver_id) ON DELETE CASCADE -- Deleting verification removes driver
+    tp_id VARCHAR2(50),
+    FOREIGN KEY (user_role_id) REFERENCES user_roles(user_role_id), -- Connect to user_roles
+    FOREIGN KEY (tp_id) REFERENCES third_party_services(tp_id) -- Connect to third_party_services
 );
- 
--- PERMISSIONS TABLE
+
+-- PERMISSIONS TABLE (References ROLES)
 CREATE TABLE permissions (
     permission_id VARCHAR2(50) PRIMARY KEY,
     role_id VARCHAR2(50),
     permissionDetails VARCHAR2(255),
     FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
 );
- 
--- LOCATIONS TABLE
+
+-- LOCATIONS TABLE (No dependencies)
 CREATE TABLE locations (
     location_id VARCHAR2(50) PRIMARY KEY,
     name VARCHAR2(100),
     address VARCHAR2(255),
     coordinates VARCHAR2(100)
 );
- 
--- SHUTTLES TABLE
+
+-- SHUTTLES TABLE (No dependencies)
 CREATE TABLE shuttles (
     shuttle_id VARCHAR2(50) PRIMARY KEY,
     model VARCHAR2(50),
@@ -78,8 +83,8 @@ CREATE TABLE shuttles (
     licensePlate VARCHAR2(50) UNIQUE,
     mileage NUMBER
 );
- 
--- TRIPS TABLE (References shuttles)
+
+-- TRIPS TABLE (References SHUTTLES)
 CREATE TABLE trips (
     trip_id VARCHAR2(50) PRIMARY KEY,
     startTime TIMESTAMP,
@@ -88,8 +93,8 @@ CREATE TABLE trips (
     shuttle_id VARCHAR2(50),
     FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id) ON DELETE CASCADE
 );
- 
--- RIDES TABLE (References trips, locations, and users)
+
+-- RIDES TABLE (References TRIPS, LOCATIONS, and USERS)
 CREATE TABLE rides (
     ride_id VARCHAR2(50) PRIMARY KEY,
     pickupLocationId VARCHAR2(50),
@@ -102,8 +107,8 @@ CREATE TABLE rides (
     FOREIGN KEY (trip_id) REFERENCES trips(trip_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
- 
--- SHIFTS TABLE (References shuttles and drivers)
+
+-- SHIFTS TABLE (References SHUTTLES and DRIVERS)
 CREATE TABLE shifts (
     shift_id VARCHAR2(50) PRIMARY KEY,
     shuttle_id VARCHAR2(50),
@@ -113,8 +118,8 @@ CREATE TABLE shifts (
     FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id) ON DELETE CASCADE, -- Deleting a shuttle deletes associated shifts
     FOREIGN KEY (driver_id) REFERENCES drivers(driver_id) ON DELETE SET NULL -- Removing a driver nullifies the shift reference
 );
- 
--- MAINTENANCE SCHEDULES TABLE (References shuttles)
+
+-- MAINTENANCE SCHEDULES TABLE (References SHUTTLES)
 CREATE TABLE maintenance_schedules (
     maintenance_id VARCHAR2(50) PRIMARY KEY,
     shuttle_id VARCHAR2(50),
@@ -122,4 +127,3 @@ CREATE TABLE maintenance_schedules (
     description VARCHAR2(255),
     FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id) ON DELETE CASCADE
 );
- 

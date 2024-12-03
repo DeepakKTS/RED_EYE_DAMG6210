@@ -292,7 +292,34 @@ JOIN
 ORDER BY 
     s.startTime DESC;
 
+/*View for MANAGER to check on the shuttles which requires maintenance*/
+CREATE OR REPLACE VIEW shuttles_due_for_maintenance AS
+SELECT 
+    s.shuttle_id,
+    s.model,
+    s.licensePlate,
+    s.mileage,
+    CASE
+        WHEN s.mileage > 100 THEN 'Required'
+        ELSE 'Not Required'
+    END AS maintenance_status
+FROM 
+    shuttles s;
+/*-- Insert Test Data into Shuttles
+INSERT INTO shuttles (shuttle_id, model, licensePlate, mileage, total_mileage, unusable_until)
+VALUES ('S9', 'Model E', 'XYZ999', 150, 1050, NULL);
 
+INSERT INTO shuttles (shuttle_id, model, licensePlate, mileage, total_mileage, unusable_until)
+VALUES ('S10', 'Model F', 'ABC987', 95, 1200, SYSDATE + INTERVAL '1' DAY);
 
+-- Insert Test Data into Maintenance Schedules
+INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+VALUES ('MNT1', 'S9', SYSDATE + INTERVAL '5' DAY, 'Routine maintenance');
+
+INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+VALUES ('MNT2', 'S10', SYSDATE - INTERVAL '3' DAY, 'Last maintenance');
+
+SELECT * FROM shuttles_due_for_maintenance;
+*/
 
     

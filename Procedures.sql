@@ -571,4 +571,86 @@ EXCEPTION
 END;
 /
 
+/*PROCEDURE 11: Procedure to assign shuttles for maintenance based on their threshold. */
+CREATE OR REPLACE PROCEDURE assign_shuttle_to_maintenance(
+    p_shuttle_id IN shuttles.shuttle_id%TYPE
+)
+IS
+    v_shuttle_exists NUMBER;
+    v_maintenance_exists NUMBER;
+    v_maintenance_date DATE;
+BEGIN
+    -- Check if the shuttle exists
+    SELECT COUNT(*) INTO v_shuttle_exists
+    FROM shuttles
+    WHERE shuttle_id = p_shuttle_id;
 
+    IF v_shuttle_exists = 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Shuttle ID does not exist.');
+    END IF;
+
+    -- Check if the shuttle is already scheduled for maintenance
+    SELECT COUNT(*) INTO v_maintenance_exists
+    FROM maintenance_schedules
+    WHERE shuttle_id = p_shuttle_id
+      AND maintenanceDate >= SYSDATE;
+
+    IF v_maintenance_exists > 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Shuttle is already scheduled for maintenance.');
+    END IF;
+
+    -- Schedule the shuttle for maintenance
+    v_maintenance_date := SYSDATE + INTERVAL '2' DAY;
+
+    INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+    VALUES (
+        'MNT_' || p_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDD'),
+        p_shuttle_id,
+        v_maintenance_date,
+        'Scheduled by manager'
+    );
+
+    -- Update the shuttle's unusable_until field
+    UPDATE shuttles
+    SET unusable_until = v_maintenance_date + INTERVAL '1' DAY
+    WHERE shuttle_id = p_shuttle_id;
+
+    DBMS_OUTPUT.PUT_LINE('Shuttle ' || p_shuttle_id || ' has been assigned for maintenance on ' || TO_CHAR(v_maintenance_date, 'YYYY-MM-DD'));
+END;
+/
+/*DELETE FROM maintenance_schedules WHERE shuttle_id IN ('S7', 'S8');
+
+-- Reset unusable_until for S7 and S8
+UPDATE shuttles SET unusable_until = NULL WHERE shuttle_id IN ('S7', 'S8');
+COMMIT;
+
+
+-- Test assigning shuttle 'S7' to maintenance
+BEGIN
+    assign_shuttle_to_maintenance('S7');
+END;
+/
+
+SELECT * FROM maintenance_schedules WHERE shuttle_id = 'S7';
+
+SELECT shuttle_id, unusable_until FROM shuttles WHERE shuttle_id = 'S7';
+
+
+-- Test assigning a non-existent shuttle 'S99'
+BEGIN
+    assign_shuttle_to_maintenance('S99');
+END;
+/
+
+-- Test assigning shuttle 'S7' to maintenance
+BEGIN
+    assign_shuttle_to_maintenance('S10');
+END;
+/
+
+BEGIN
+    assign_shuttle_to_maintenance('S8');
+END;
+/
+
+SELECT * FROM maintenance_schedules WHERE shuttle_id = 'S10';*/
