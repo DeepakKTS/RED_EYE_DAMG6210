@@ -15,4 +15,58 @@ GROUP BY
 ORDER BY
     maintenance_month, shuttle_id;
 
+/*The Shuttle Efficiency and Mileage Trends Report provides a comprehensive analysis of shuttle usage by summarizing daily mileage trends, cumulative total mileage, and the total number of trips completed for each shuttle. This report helps identify utilization patterns, peak usage times, and potential underutilization of shuttle assets.*/
+CREATE OR REPLACE VIEW shuttle_efficiency_and_mileage_trends AS
+WITH daily_mileage AS (
+    SELECT 
+        shuttle_id,
+        TRUNC(updated_at) AS mileage_date,
+        SUM(mileage_added) AS daily_mileage_added,
+        MAX(total_mileage) AS total_mileage
+    FROM 
+        shuttle_mileage_records
+    GROUP BY 
+        shuttle_id, TRUNC(updated_at)
+),
+trip_count AS (
+    SELECT 
+        shuttle_id,
+        COUNT(trip_id) AS trip_count
+    FROM 
+        shuttle_mileage_records
+    GROUP BY 
+        shuttle_id
+)
+SELECT 
+    dm.shuttle_id,
+    dm.mileage_date,
+    dm.daily_mileage_added,
+    dm.total_mileage,
+    tc.trip_count
+FROM 
+    daily_mileage dm
+LEFT JOIN 
+    trip_count tc
+ON 
+    dm.shuttle_id = tc.shuttle_id
+ORDER BY 
+    dm.shuttle_id, dm.mileage_date;
 
+/*The Most Frequent Routes Report identifies popular routes by analyzing the frequency of trips between pickup and drop-off locations. It provides insights to optimize route planning and improve shuttle availability based on demand.*/
+CREATE OR REPLACE VIEW most_frequent_routes_report AS
+SELECT 
+    r.pickupLocationId AS pickup_location_id,
+    l1.name AS pickup_location_name,
+    r.dropoffLocationId AS dropoff_location_id,
+    l2.name AS dropoff_location_name,
+    COUNT(*) AS trip_count
+FROM 
+    rides r
+INNER JOIN 
+    locations l1 ON r.pickupLocationId = l1.location_id
+INNER JOIN 
+    locations l2 ON r.dropoffLocationId = l2.location_id
+GROUP BY 
+    r.pickupLocationId, l1.name, r.dropoffLocationId, l2.name
+ORDER BY 
+    trip_count DESC;
