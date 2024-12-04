@@ -63,11 +63,11 @@ SELECT
 FROM 
     rides r
 INNER JOIN 
-    locations l1 ON r.pickupLocationId = l1.location_id
+    locations l1 ON r.pickup_Location_Id = l1.location_id
 INNER JOIN 
-    locations l2 ON r.dropoffLocationId = l2.location_id
+    locations l2 ON r.dropoff_Location_Id = l2.location_id
 GROUP BY 
-    r.pickupLocationId, l1.name, r.dropoffLocationId, l2.name
+    r.pickup_Location_Id, l1.name, r.dropoff_Location_Id, l2.name
 ORDER BY 
     trip_count DESC;
 ---The TOPDRIVERS view ranks drivers based on performance metrics, aggregating data to show total hours worked and trips completed.
@@ -75,8 +75,8 @@ CREATE OR REPLACE VIEW TOPDRIVERS AS
 SELECT
     d.driver_id,
     -- Calculate total hours worked (sum of the difference between start and end times)
-    ROUND(SUM(EXTRACT(HOUR FROM (s.endTime - s.startTime)) + 
-              EXTRACT(MINUTE FROM (s.endTime - s.startTime)) / 60), 2) AS total_hours_worked,
+    ROUND(SUM(EXTRACT(HOUR FROM (s.end_time - s.start_time)) + 
+              EXTRACT(MINUTE FROM (s.end_time - s.start_time)) / 60), 2) AS total_hours_worked,
     -- Calculate the total number of trips taken by the driver
     COUNT(t.trip_id) AS total_trips_taken
 FROM
@@ -90,24 +90,20 @@ GROUP BY
 ORDER BY
     total_trips_taken DESC, total_hours_worked DESC;
 
-----The `MostUsedShuttles` view displays each shuttle's ID, model, license plate, capacity, total mileage,
--- and the count of shifts it was used for, ordered by the most frequently used shuttles.
-CREATE OR REPLACE VIEW MostUsedShuttles AS
+ /*Report - Average Cancels per day*/
+ CREATE OR REPLACE VIEW AverageCancelsPerDay AS
 SELECT
-    s.shuttle_id,
-    s.model,
-    s.licensePlate,
-    s.capacity,
-    s.total_mileage,
-    COUNT(sh.shift_id) AS times_used -- Count the number of shifts associated with the shuttle
+    TRUNC(t.startTime) AS trip_date,                         -- Extract the date from the startTime
+    COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) AS cancels_per_day, -- Count canceled trips for the day
+    ROUND(
+        COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) * 1.0 / 
+        COUNT(DISTINCT TRUNC(t.startTime)), 2
+    ) AS average_cancels,                                   -- Calculate the average cancels per day
+    LISTAGG(t.trip_id, ', ') WITHIN GROUP (ORDER BY t.trip_id) AS trip_ids, -- Aggregate trip IDs
+    LISTAGG(t.shuttle_id, ', ') WITHIN GROUP (ORDER BY t.shuttle_id) AS shuttle_ids -- Aggregate shuttle IDs
 FROM
-    shuttles s
-LEFT JOIN
-    shifts sh ON s.shuttle_id = sh.shuttle_id -- Join shuttles with shifts
+    trips t
 GROUP BY
-    s.shuttle_id, s.model, s.licensePlate, s.capacity, s.total_mileage
+    TRUNC(t.startTime)
 ORDER BY
-    times_used DESC; -- Order by most used shuttles
-
- 
- 
+    trip_date;
