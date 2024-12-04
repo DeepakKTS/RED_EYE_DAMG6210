@@ -109,5 +109,20 @@ GROUP BY
 ORDER BY
     times_used DESC; -- Order by most used shuttles
 
- 
- 
+ /*Report - Average Cancels per day*/
+ CREATE OR REPLACE VIEW AverageCancelsPerDay AS
+SELECT
+    TRUNC(t.startTime) AS trip_date,                         -- Extract the date from the startTime
+    COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) AS cancels_per_day, -- Count canceled trips for the day
+    ROUND(
+        COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) * 1.0 / 
+        COUNT(DISTINCT TRUNC(t.startTime)), 2
+    ) AS average_cancels,                                   -- Calculate the average cancels per day
+    LISTAGG(t.trip_id, ', ') WITHIN GROUP (ORDER BY t.trip_id) AS trip_ids, -- Aggregate trip IDs
+    LISTAGG(t.shuttle_id, ', ') WITHIN GROUP (ORDER BY t.shuttle_id) AS shuttle_ids -- Aggregate shuttle IDs
+FROM
+    trips t
+GROUP BY
+    TRUNC(t.startTime)
+ORDER BY
+    trip_date;
