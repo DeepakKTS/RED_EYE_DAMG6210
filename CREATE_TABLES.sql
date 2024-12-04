@@ -7,7 +7,7 @@ BEGIN
         WHERE table_name IN (
             'SHIFTS', 'MAINTENANCE_SCHEDULES', 'THIRD_PARTY_SERVICES', 
             'DRIVERS', 'RIDES', 'TRIPS', 'SHUTTLES', 'LOCATIONS', 
-            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS'
+            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS', 'REASSIGNMENT_LOG', 'FUEL_EFFICIENCY_LOG'
         )
     ) LOOP
         EXECUTE IMMEDIATE 'DROP TABLE ' || table_name.table_name || ' CASCADE CONSTRAINTS';
