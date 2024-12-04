@@ -4,16 +4,16 @@ number of maintenance schedules conducted for shuttles on a monthly basis*/
 
 CREATE OR REPLACE VIEW MaintenancePerMonth AS
 SELECT
-    TO_CHAR(maintenanceDate, 'YYYY-MM') AS maintenance_month,
-    shuttle_id,
-    COUNT(*) AS maintenance_count
+    TO_CHAR(maintenanceDate, 'YYYY-MM') AS maintenance_month,
+    shuttle_id,
+    COUNT(*) AS maintenance_count
 FROM
-    maintenance_schedules
+    maintenance_schedules
 GROUP BY
-    TO_CHAR(maintenanceDate, 'YYYY-MM'),
-    shuttle_id
+    TO_CHAR(maintenanceDate, 'YYYY-MM'),
+    shuttle_id
 ORDER BY
-    maintenance_month, shuttle_id;
+    maintenance_month, shuttle_id;
 
 /*The Shuttle Efficiency and Mileage Trends Report provides a comprehensive analysis of shuttle usage by summarizing daily mileage trends, cumulative total mileage, and the total number of trips completed for each shuttle. This report helps identify utilization patterns, peak usage times, and potential underutilization of shuttle assets.*/
 CREATE OR REPLACE VIEW shuttle_efficiency_and_mileage_trends AS
@@ -70,3 +70,24 @@ GROUP BY
     r.pickupLocationId, l1.name, r.dropoffLocationId, l2.name
 ORDER BY 
     trip_count DESC;
+---The TOPDRIVERS view ranks drivers based on performance metrics, aggregating data to show total hours worked and trips completed.
+CREATE OR REPLACE VIEW TOPDRIVERS AS
+SELECT
+    d.driver_id,
+    -- Calculate total hours worked (sum of the difference between start and end times)
+    ROUND(SUM(EXTRACT(HOUR FROM (s.endTime - s.startTime)) + 
+              EXTRACT(MINUTE FROM (s.endTime - s.startTime)) / 60), 2) AS total_hours_worked,
+    -- Calculate the total number of trips taken by the driver
+    COUNT(t.trip_id) AS total_trips_taken
+FROM
+    drivers d
+JOIN
+    shifts s ON d.driver_id = s.driver_id
+LEFT JOIN
+    trips t ON s.shuttle_id = t.shuttle_id -- Join on shuttle_id instead of shift_id
+GROUP BY
+    d.driver_id
+ORDER BY
+    total_trips_taken DESC, total_hours_worked DESC;
+
+ 
