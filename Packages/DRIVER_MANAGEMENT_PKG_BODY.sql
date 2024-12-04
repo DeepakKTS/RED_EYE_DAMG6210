@@ -9,7 +9,7 @@ create or replace PACKAGE BODY driver_management_pkg AS
         rest_period_in_hours NUMBER;
     BEGIN
         -- Fetch the last trip end time for the given driver
-        SELECT MAX(t.endTime)
+        SELECT MAX(t.end_time)
         INTO last_trip_end_time
         FROM trips t
         JOIN shuttles s ON t.shuttle_id = s.shuttle_id
@@ -40,7 +40,7 @@ create or replace PACKAGE BODY driver_management_pkg AS
     PROCEDURE ASSIGN_BACKUP_DRIVERS AS
         -- Cursor to fetch shifts without assigned drivers
         CURSOR unassigned_shifts IS
-            SELECT shift_id, shuttle_id, startTime, endTime
+            SELECT shift_id, shuttle_id, start_time, end_time
             FROM shifts
             WHERE driver_id IS NULL; -- Select shifts without an assigned primary driver
 
@@ -63,7 +63,7 @@ create or replace PACKAGE BODY driver_management_pkg AS
                     SELECT 1
                     FROM shifts s
                     WHERE s.driver_id = d.driver_id
-                    AND (s.startTime <= shift_record.endTime AND s.endTime >= shift_record.startTime)
+                    AND (s.start_time <= shift_record.end_time AND s.end_time >= shift_record.start_time)
                 )
                 AND ROWNUM = 1; -- Fetch the first available driver
 
@@ -92,11 +92,11 @@ create or replace PACKAGE BODY driver_management_pkg AS
 
     -- Procedure to enforce background check for drivers
     PROCEDURE ENFORCE_DRIVER_BACKGROUND_CHECK (driver_id IN drivers.driver_id%TYPE) IS
-        license_number drivers.licenseNumber%TYPE;
+        license_number drivers.licence_number%TYPE;
     BEGIN
         -- Fetch the driver's license number from the drivers table
         BEGIN
-            SELECT licenseNumber
+            SELECT licence_number
             INTO license_number
             FROM drivers
             WHERE driver_id = driver_id;

@@ -1,157 +1,353 @@
 create or replace PACKAGE BODY asset_management_pkg IS
 
-   -- Shuttles table operations
-   PROCEDURE manage_shuttle (
-      p_shuttle_id   IN VARCHAR2,
-      p_model        IN VARCHAR2 DEFAULT NULL,
-      p_capacity     IN NUMBER DEFAULT NULL,
-      p_licensePlate IN VARCHAR2 DEFAULT NULL,
-      p_action       IN VARCHAR2
-   ) IS
-      v_count NUMBER;
+   FUNCTION is_valid_email(p_email IN VARCHAR2) RETURN BOOLEAN IS
    BEGIN
-      SELECT COUNT(*)
-      INTO v_count
-      FROM shuttles
-      WHERE shuttle_id = p_shuttle_id;
+      RETURN REGEXP_LIKE(p_email, '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
+   END is_valid_email;
 
-      IF p_action = 'INSERT' THEN
-         IF v_count = 0 THEN
-            INSERT INTO shuttles (shuttle_id, model, capacity, licensePlate)
-            VALUES (p_shuttle_id, p_model, p_capacity, p_licensePlate);
-            DBMS_OUTPUT.PUT_LINE('? Successfully inserted shuttle with ID: ' || p_shuttle_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? Shuttle with ID: ' || p_shuttle_id || ' already exists.');
-         END IF;
-      ELSIF p_action = 'UPDATE' THEN
-         IF v_count > 0 THEN
-            UPDATE shuttles
-            SET model = p_model,
-                capacity = p_capacity,
-                licensePlate = p_licensePlate
-            WHERE shuttle_id = p_shuttle_id;
-            DBMS_OUTPUT.PUT_LINE('? Successfully updated shuttle with ID: ' || p_shuttle_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? No shuttle found with ID: ' || p_shuttle_id);
-         END IF;
-      ELSIF p_action = 'DELETE' THEN
-         IF v_count > 0 THEN
-            DELETE FROM shuttles WHERE shuttle_id = p_shuttle_id;
-            DBMS_OUTPUT.PUT_LINE('? Successfully deleted shuttle with ID: ' || p_shuttle_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? No shuttle found with ID: ' || p_shuttle_id);
-         END IF;
+   FUNCTION does_user_exist(p_email IN users.email%TYPE) RETURN BOOLEAN IS
+   v_user_id VARCHAR2(50);
+   BEGIN
+      SELECT user_id
+      INTO v_user_id
+      FROM users
+      WHERE email = p_email;
+
+      IF v_user_id IS NULL THEN
+         RETURN FALSE;
       ELSE
-         DBMS_OUTPUT.PUT_LINE('? Invalid action specified.');
+         RETURN TRUE;
       END IF;
-      COMMIT;
-   EXCEPTION
-      WHEN OTHERS THEN
-         DBMS_OUTPUT.PUT_LINE('Error Code: ' || SQLCODE);
-         DBMS_OUTPUT.PUT_LINE('Error Message: ' || SQLERRM);
-         RAISE_APPLICATION_ERROR(-20001, '? Failed to manage shuttle with ID: ' || p_shuttle_id);
-   END manage_shuttle;
+   END does_user_exist;
 
-   -- Locations table operations
-   PROCEDURE manage_location (
-      p_location_id IN VARCHAR2,
-      p_name        IN VARCHAR2 DEFAULT NULL,
-      p_address     IN VARCHAR2 DEFAULT NULL,
-      p_coordinates IN VARCHAR2 DEFAULT NULL,
-      p_action      IN VARCHAR2
+   -- Add new users
+   PROCEDURE add_new_user (
+      p_name IN users.name%TYPE,
+      p_email IN users.email%TYPE,
+      p_phone IN users.phone%TYPE
    ) IS
-      v_count NUMBER;
+   v_user_id VARCHAR2(50);
+   v_role_id VARCHAR2(50);
+   v_user_role_id VARCHAR2(50);
    BEGIN
-      SELECT COUNT(*)
-      INTO v_count
+
+      IF p_name IS NULL OR p_email IS NULL OR p_phone IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('Name, Email, and Phone cannot be null.');
+         RETURN;
+      END IF;
+
+      IF does_user_exist(p_email) THEN
+         DBMS_OUTPUT.PUT_LINE('Email already in use.');
+         RETURN;
+      END IF;
+
+      v_user_id := 'USER_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      v_role_id := 'R4';
+      v_user_role_id := 'UR_' || v_user_id || '_' || v_role_id;
+
+      INSERT INTO users (user_id, name, email, phone)
+      VALUES (v_user_id, p_name, p_email, p_phone);
+
+      INSERT INTO user_roles (user_role_id, user_id, role_id)
+      VALUES (v_user_role_id, v_user_id, v_role_id);
+
+      DBMS_OUTPUT.PUT_LINE('Successfully added new user with ID: ' || v_user_id);
+      COMMIT;
+
+   END;
+
+   -- Add new drivers
+   PROCEDURE add_new_driver (
+      p_name IN users.name%TYPE,
+      p_email IN users.email%TYPE,
+      p_phone IN users.phone%TYPE,
+      p_license_number IN drivers.license_number%TYPE,
+      p_tp_id IN third_party_services.tp_id%TYPE
+   ) IS
+   v_driver_id VARCHAR2(50);
+   v_role_id VARCHAR2(50);
+   v_user_role_id VARCHAR2(50);
+   v_tp_id VARCHAR2(50);
+   BEGIN
+
+      IF p_name IS NULL OR p_email IS NULL OR p_phone IS NULL OR p_license_number IS NULL OR p_tp_id IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('Name, Email, Phone, License Number, and Third Party ID cannot be null.');
+         RETURN;
+      END IF;
+
+      IF does_user_exist(p_email) THEN
+         DBMS_OUTPUT.PUT_LINE('Email already in use.');
+         RETURN;
+      END IF;
+
+      v_driver_id := 'DRIVER_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      v_role_id := 'R2';
+      v_user_role_id := 'UR_' || v_driver_id || '_' || v_role_id;
+
+      INSERT INTO users (user_id, name, email, phone)
+      VALUES (v_driver_id, p_name, p_email, p_phone);
+
+      INSERT INTO user_roles (user_role_id, user_id, role_id)
+      VALUES (v_user_role_id, v_driver_id, v_role_id);
+
+      INSERT INTO drivers (driver_id, user_role_id, license_number, tp_id)
+      VALUES (v_driver_id, v_user_role_id, p_license_number, p_tp_id);
+
+
+      DBMS_OUTPUT.PUT_LINE('Successfully added new driver with ID: ' || v_driver_id);
+      COMMIT;
+
+   END;
+
+   -- Delete users
+   PROCEDURE delete_user (
+      p_email IN users.email%TYPE
+   ) IS
+   v_user_id VARCHAR2(50);
+   BEGIN
+      IF p_email IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('User ID cannot be null.');
+         RETURN;
+      END IF;
+
+      
+      IF NOT does_user_exist(p_email) THEN
+         DBMS_OUTPUT.PUT_LINE('User with eamil: ' || p_email || ' does not exist.');
+         RETURN;
+      END IF;      
+
+      UPDATE users
+      SET is_active = 0
+      WHERE email = p_email;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully deleted user with email: ' || p_email);
+      COMMIT;
+   END;
+
+   -- Update user details
+   PROCEDURE update_user (
+      p_name IN users.name%TYPE DEFAULT NULL,
+      p_email IN users.email%TYPE DEFAULT NULL,
+      p_phone IN users.phone%TYPE DEFAULT NULL
+   ) IS
+   v_user_id VARCHAR2(50);
+   v_name users.name%TYPE;
+   v_phone users.phone%TYPE;
+   BEGIN
+      IF p_email IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('User ID cannot be null.');
+         RETURN;
+      END IF;
+
+      IF NOT does_user_exist(p_email) THEN
+         DBMS_OUTPUT.PUT_LINE('User with email: ' || p_email || ' does not exist.');
+         RETURN;
+      END IF;
+
+      IF p_name IS NULL AND p_phone IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('No changes specified.');
+         RETURN;
+      END IF;
+
+      IF p_name IS NULL THEN
+         SELECT name INTO v_name FROM users WHERE email = p_email;
+      ELSE
+         v_name := p_name;
+      END IF;
+
+      IF p_phone IS NULL THEN
+         SELECT phone INTO v_phone FROM users WHERE email = p_email;
+      ELSE
+         v_phone := p_phone;
+      END IF;
+
+      UPDATE USERS
+      SET name = v_name,
+         phone = v_phone
+      WHERE email = p_email;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully updated user with email: ' || p_email);
+      COMMIT;
+   END;
+
+   -- Restore deleted user
+   PROCEDURE restore_user (
+      p_email IN users.email%TYPE
+   ) IS
+   v_user_id VARCHAR2(50);
+   BEGIN
+      IF p_email IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('User email cannot be null.');
+         RETURN;
+      END IF;
+
+      IF NOT does_user_exist(p_email) THEN
+         DBMS_OUTPUT.PUT_LINE('User with email: ' || p_email || ' does not exist.');
+         RETURN;
+      END IF;
+
+      UPDATE users
+      SET is_active = 1
+      WHERE email = p_email;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully restored user with email: ' || p_email);
+      COMMIT;
+   END;
+
+   FUNCTION does_location_exist(p_name IN locations.name%TYPE) RETURN BOOLEAN IS
+   v_location_id VARCHAR2(50);
+   BEGIN
+      SELECT location_id
+      INTO v_location_id
       FROM locations
-      WHERE location_id = p_location_id;
+      WHERE name = p_name;
 
-      IF p_action = 'INSERT' THEN
-         IF v_count = 0 THEN
-            INSERT INTO locations (location_id, name, address, coordinates)
-            VALUES (p_location_id, p_name, p_address, p_coordinates);
-            DBMS_OUTPUT.PUT_LINE('? Successfully inserted location with ID: ' || p_location_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? Location with ID: ' || p_location_id || ' already exists.');
-         END IF;
-      ELSIF p_action = 'UPDATE' THEN
-         IF v_count > 0 THEN
-            UPDATE locations
-            SET name = p_name,
-                address = p_address,
-                coordinates = p_coordinates
-            WHERE location_id = p_location_id;
-            DBMS_OUTPUT.PUT_LINE('? Successfully updated location with ID: ' || p_location_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? No location found with ID: ' || p_location_id);
-         END IF;
-      ELSIF p_action = 'DELETE' THEN
-         IF v_count > 0 THEN
-            DELETE FROM locations WHERE location_id = p_location_id;
-            DBMS_OUTPUT.PUT_LINE('? Successfully deleted location with ID: ' || p_location_id);
-         ELSE
-            DBMS_OUTPUT.PUT_LINE('?? No location found with ID: ' || p_location_id);
-         END IF;
+      IF v_location_id IS NULL THEN
+         RETURN FALSE;
       ELSE
-         DBMS_OUTPUT.PUT_LINE('? Invalid action specified.');
+         RETURN TRUE;
       END IF;
+   END does_location_exist;
+
+   -- Add new location
+   PROCEDURE add_new_location (
+      p_name IN locations.name%TYPE,
+      p_address IN locations.address%TYPE
+   ) IS
+   v_location_id VARCHAR2(50);
+   BEGIN
+
+      IF p_name IS NULL OR p_address IS NULL THEN
+         DBMS_OUTPUT.PUT_LINE('Name and Address cannot be null.');
+         RETURN;
+      END IF;
+
+      -- check if location already exists
+      IF does_location_exist(p_name) THEN
+         DBMS_OUTPUT.PUT_LINE('Location already exists.');
+         RETURN;
+      END IF;
+
+      v_location_id := 'LOC_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+
+      INSERT INTO locations (location_id, name, address)
+      VALUES (v_location_id, p_name, p_address);
+
+      DBMS_OUTPUT.PUT_LINE('Successfully added new location with ID: ' || v_location_id);
       COMMIT;
-   EXCEPTION
-      WHEN OTHERS THEN
-         DBMS_OUTPUT.PUT_LINE('Error Code: ' || SQLCODE);
-         DBMS_OUTPUT.PUT_LINE('Error Message: ' || SQLERRM);
-         RAISE_APPLICATION_ERROR(-20002, '? Failed to manage location with ID: ' || p_location_id);
-   END manage_location;
+   END;
 
-   -- Permissions table operations
-   PROCEDURE manage_permission (
-   p_permission_id     IN VARCHAR2,
-   p_role_id           IN VARCHAR2 DEFAULT NULL,
-   p_permissionDetails IN VARCHAR2 DEFAULT NULL,
-   p_action            IN VARCHAR2
-) IS
-   v_count NUMBER;
-BEGIN
-   -- Check if the permission exists
-   SELECT COUNT(*)
-   INTO v_count
-   FROM permissions
-   WHERE permission_id = p_permission_id;
+   -- Delete location
+   PROCEDURE delete_location (
+      p_name IN locations.name%TYPE
+   ) IS
+   v_location_id VARCHAR2(50);
+   BEGIN
+      IF p_name IS NULL THEN
+         RAISE_APPLICATION_ERROR(-20001, 'Location name cannot be null.');
+         RETURN;
+      END IF;
 
-   IF p_action = 'INSERT' THEN
-      IF v_count = 0 THEN
-         INSERT INTO permissions (permission_id, role_id, permissionDetails)
-         VALUES (p_permission_id, p_role_id, p_permissionDetails);
-         DBMS_OUTPUT.PUT_LINE('? Successfully inserted permission with ID: ' || p_permission_id);
-      ELSE
-         DBMS_OUTPUT.PUT_LINE('?? Permission with ID: ' || p_permission_id || ' already exists.');
+      IF NOT does_location_exist(p_name) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Location with name: ' || p_name || ' does not exist.');
+         RETURN;
       END IF;
-   ELSIF p_action = 'UPDATE' THEN
-      IF v_count > 0 THEN
-         UPDATE permissions
-         SET role_id = p_role_id,
-             permissionDetails = p_permissionDetails
-         WHERE permission_id = p_permission_id;
-         DBMS_OUTPUT.PUT_LINE('? Successfully updated permission with ID: ' || p_permission_id);
-      ELSE
-         DBMS_OUTPUT.PUT_LINE('?? No permission found with ID: ' || p_permission_id);
+
+      UPDATE locations
+      SET is_active = 0
+      WHERE name = p_name;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully deleted location : ' || p_name);
+      COMMIT;
+   END;
+
+   -- Restore deleted location
+   PROCEDURE restore_location (
+      p_name IN locations.name%TYPE
+   ) IS
+   v_location_id VARCHAR2(50);
+   BEGIN
+      IF p_name IS NULL THEN
+         RAISE_APPLICATION_ERROR(-20001, 'Location name cannot be null.');
+         RETURN;
       END IF;
-   ELSIF p_action = 'DELETE' THEN
-      IF v_count > 0 THEN
-         DELETE FROM permissions WHERE permission_id = p_permission_id;
-         DBMS_OUTPUT.PUT_LINE('? Successfully deleted permission with ID: ' || p_permission_id);
-      ELSE
-         DBMS_OUTPUT.PUT_LINE('?? No permission found with ID: ' || p_permission_id);
+
+      IF NOT does_location_exist(p_name) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Location with name: ' || p_name || ' does not exist.');
+         RETURN;
       END IF;
-   ELSE
-      DBMS_OUTPUT.PUT_LINE('? Invalid action specified.');
-   END IF;
-   COMMIT;
-EXCEPTION
-   WHEN OTHERS THEN
-      DBMS_OUTPUT.PUT_LINE('Error Code: ' || SQLCODE);
-      DBMS_OUTPUT.PUT_LINE('Error Message: ' || SQLERRM);
-      RAISE_APPLICATION_ERROR(-20004, '? Failed to manage permission with ID: ' || p_permission_id);
-END manage_permission;
+
+      UPDATE locations
+      SET is_active = 1
+      WHERE name = p_name;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully restored location: ' || p_name);
+      COMMIT;
+   END;
+
+   FUNCTION does_shuttle_exist(p_license_plate IN shuttles.license_plate%TYPE) RETURN BOOLEAN IS
+   v_shuttle_id VARCHAR2(50);
+   BEGIN
+      SELECT shuttle_id
+      INTO v_shuttle_id
+      FROM shuttles
+      WHERE license_plate = p_license_plate;
+
+      IF v_shuttle_id IS NULL THEN
+         RETURN FALSE;
+      ELSE
+         RETURN TRUE;
+      END IF;
+   END does_shuttle_exist;
+
+   -- Add new shuttle
+   PROCEDURE add_new_shuttle (
+      p_model IN shuttles.model%TYPE,
+      p_license_plate IN shuttles.license_plate%TYPE
+   ) IS
+   v_shuttle_id VARCHAR2(50);
+   BEGIN
+      IF p_model IS NULL OR p_license_plate IS NULL THEN
+         RAISE_APPLICATION_ERROR(-20001, 'Model and License Plate cannot be null.');
+         RETURN;
+      END IF;
+
+      v_shuttle_id := 'SHUTTLE_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+
+      IF does_shuttle_exist(p_license_plate) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' already exists.');
+         RETURN;
+      END IF;
+
+      INSERT INTO shuttles (shuttle_id, model, license_plate)
+      VALUES (v_shuttle_id, p_model, p_license_plate);
+
+      DBMS_OUTPUT.PUT_LINE('Successfully added new shuttle with ID: ' || v_shuttle_id);
+      COMMIT;
+   END;
+
+   -- Delete shuttle
+   PROCEDURE delete_shuttle (
+      p_license_plate IN shuttles.license_plate%TYPE
+   ) IS
+   v_shuttle_id VARCHAR2(50);
+   BEGIN
+      IF p_license_plate IS NULL THEN
+         RAISE_APPLICATION_ERROR(-20001, 'License Plate cannot be null.');
+         RETURN;
+      END IF;
+
+      IF NOT does_shuttle_exist(p_license_plate) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' does not exist.');
+         RETURN;
+      END IF;
+
+      UPDATE shuttles
+      SET is_active = 0
+      WHERE license_plate = p_license_plate;
+
+      DBMS_OUTPUT.PUT_LINE('Successfully deleted shuttle : ' || p_license_plate);
+      COMMIT;
+   END;
+
 END asset_management_pkg;

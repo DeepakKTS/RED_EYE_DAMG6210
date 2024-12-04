@@ -5,8 +5,8 @@ create or replace PACKAGE BODY service_management_pkg IS
       p_shift_id   IN VARCHAR2,
       p_shuttle_id IN VARCHAR2 DEFAULT NULL,
       p_driver_id  IN VARCHAR2 DEFAULT NULL,
-      p_startTime  IN TIMESTAMP DEFAULT NULL,
-      p_endTime    IN TIMESTAMP DEFAULT NULL,
+      p_start_time  IN TIMESTAMP DEFAULT NULL,
+      p_end_time    IN TIMESTAMP DEFAULT NULL,
       p_action     IN VARCHAR2
    ) IS
       v_count NUMBER;
@@ -18,8 +18,8 @@ create or replace PACKAGE BODY service_management_pkg IS
 
       IF p_action = 'INSERT' THEN
          IF v_count = 0 THEN
-            INSERT INTO shifts (shift_id, shuttle_id, driver_id, startTime, endTime)
-            VALUES (p_shift_id, p_shuttle_id, p_driver_id, p_startTime, p_endTime);
+            INSERT INTO shifts (shift_id, shuttle_id, driver_id, start_time, end_time)
+            VALUES (p_shift_id, p_shuttle_id, p_driver_id, p_start_time, p_end_time);
             DBMS_OUTPUT.PUT_LINE('? Successfully inserted shift with ID: ' || p_shift_id);
          ELSE
             DBMS_OUTPUT.PUT_LINE('?? Shift with ID: ' || p_shift_id || ' already exists.');
@@ -29,8 +29,8 @@ create or replace PACKAGE BODY service_management_pkg IS
             UPDATE shifts
             SET shuttle_id = p_shuttle_id,
                 driver_id = p_driver_id,
-                startTime = p_startTime,
-                endTime = p_endTime
+                start_time = p_start_time,
+                end_time = p_end_time
             WHERE shift_id = p_shift_id;
             DBMS_OUTPUT.PUT_LINE('? Successfully updated shift with ID: ' || p_shift_id);
          ELSE
@@ -58,7 +58,7 @@ create or replace PACKAGE BODY service_management_pkg IS
    PROCEDURE manage_maintenance_schedule (
       p_maintenance_id IN VARCHAR2,
       p_shuttle_id     IN VARCHAR2 DEFAULT NULL,
-      p_maintenanceDate IN DATE DEFAULT NULL,
+      p_maintenance_date IN DATE DEFAULT NULL,
       p_description    IN VARCHAR2 DEFAULT NULL,
       p_action         IN VARCHAR2
    ) IS
@@ -71,8 +71,8 @@ create or replace PACKAGE BODY service_management_pkg IS
 
       IF p_action = 'INSERT' THEN
          IF v_count = 0 THEN
-            INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
-            VALUES (p_maintenance_id, p_shuttle_id, p_maintenanceDate, p_description);
+            INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenance_date, description)
+            VALUES (p_maintenance_id, p_shuttle_id, p_maintenance_date, p_description);
             DBMS_OUTPUT.PUT_LINE('? Successfully inserted maintenance schedule with ID: ' || p_maintenance_id);
          ELSE
             DBMS_OUTPUT.PUT_LINE('?? Maintenance schedule with ID: ' || p_maintenance_id || ' already exists.');
@@ -81,7 +81,7 @@ create or replace PACKAGE BODY service_management_pkg IS
          IF v_count > 0 THEN
             UPDATE maintenance_schedules
             SET shuttle_id = p_shuttle_id,
-                maintenanceDate = p_maintenanceDate,
+                maintenance_date = p_maintenance_date,
                 description = p_description
             WHERE maintenance_id = p_maintenance_id;
             DBMS_OUTPUT.PUT_LINE('? Successfully updated maintenance schedule with ID: ' || p_maintenance_id);

@@ -9,7 +9,7 @@ BEGIN
   DECLARE
     v_count INTEGER;
   BEGIN
-    SELECT COUNT(*) INTO v_count FROM RIDES WHERE user_id = 'U2' AND dropoffLocationId = 'L3' and status = 'BOOKED';
+    SELECT COUNT(*) INTO v_count FROM RIDES WHERE user_id = 'U2' AND dropoff_location_id = 'L3' and status = 'BOOKED';
     IF v_count = 0 THEN
       DBMS_OUTPUT.PUT_LINE('Test Failed: Ride not booked');
     ELSE
@@ -26,7 +26,7 @@ BEGIN
   DECLARE
     v_count INTEGER;
   BEGIN
-    SELECT COUNT(*) INTO v_count FROM RIDES WHERE user_id = 'U2' AND dropoffLocationId = 'L3' and status = 'BOOKED';
+    SELECT COUNT(*) INTO v_count FROM RIDES WHERE user_id = 'U2' AND dropoff_location_id = 'L3' and status = 'BOOKED';
     IF v_count > 0 THEN
       DBMS_OUTPUT.PUT_LINE('Test Failed: Ride not canceled');
     ELSE

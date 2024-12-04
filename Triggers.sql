@@ -9,7 +9,7 @@ DECLARE
 BEGIN
     -- Retrieve the trip's start date
     BEGIN
-        SELECT t.startTime INTO trip_start_date
+        SELECT t.start_time INTO trip_start_date
         FROM trips t
         WHERE t.trip_id = :NEW.trip_id;
     EXCEPTION
@@ -34,7 +34,7 @@ DECLARE
     time_difference NUMBER;
 BEGIN
     -- Retrieve the trip's start time
-    SELECT t.startTime INTO ride_start_time
+    SELECT t.start_time INTO ride_start_time
     FROM trips t
     WHERE t.trip_id = :OLD.trip_id;
 
@@ -79,14 +79,14 @@ DECLARE
     v_last_end_time TIMESTAMP;
 BEGIN
     -- Fetch the end time of the most recent shift for the same shuttle
-    SELECT MAX(endTime) INTO v_last_end_time
+    SELECT MAX(end_time) INTO v_last_end_time
     FROM shifts
     WHERE shuttle_id = :NEW.shuttle_id
       AND shift_id != :NEW.shift_id; -- Exclude the current shift being inserted/updated
 
     -- Enforce the 2-hour idle time rule
     IF v_last_end_time IS NOT NULL THEN
-        IF :NEW.startTime < v_last_end_time + idle_time_limit THEN
+        IF :NEW.start_time < v_last_end_time + idle_time_limit THEN
             RAISE_APPLICATION_ERROR(-20005, 'Shuttle idle time must be at least 2 hours.');
         END IF;
     END IF;
@@ -121,13 +121,13 @@ END;
 /
 /*Trigger 6: Enforce pickup location 
 Ttrigger ensures that any INSERT or UPDATE operation on the rides table automatically sets the 
-pickupLocationId to 'L6'(snell) regardless of the input provided. 
+pickup_location_id to 'L6'(snell) regardless of the input provided. 
 This enforces a consistent pickup location for all ride records..*/
 create or replace TRIGGER enforce_pickup_location
 BEFORE INSERT OR UPDATE ON rides
 FOR EACH ROW
 BEGIN
-  :NEW.pickupLocationId := 'L6';
+  :NEW.pickup_location_id := 'L6';
 END;
 /
  

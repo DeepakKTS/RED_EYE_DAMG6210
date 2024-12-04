@@ -7,7 +7,21 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    C_STATUS_BOOKED CONSTANT VARCHAR2(20) := 'BOOKED';
    C_STATUS_CANCELLED CONSTANT VARCHAR2(20) := 'CANCELLED';
 
-   -- Added to test
+   -- Function to check if user exists
+   FUNCTION does_user_exist(p_email IN users.email%TYPE) RETURN BOOLEAN IS
+      v_user_id VARCHAR2(50);
+   BEGIN
+      SELECT user_id
+      INTO v_user_id
+      FROM users
+      WHERE email = p_email;
+
+      IF v_user_id IS NULL THEN
+         RETURN FALSE;
+      ELSE
+         RETURN TRUE;
+      END IF;
+   END does_user_exist;
 
    PROCEDURE update_trip_status IS
    BEGIN
@@ -15,7 +29,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       UPDATE trips 
       SET status = C_STATUS_COMPLETED
       WHERE status = C_STATUS_IN_PROGRESS
-      AND endTime < SYSTIMESTAMP;
+      AND end_time < SYSTIMESTAMP;
 
       -- Update rides to completed
       UPDATE rides 
@@ -38,11 +52,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    BEGIN
       v_trip_id := 'TRIP_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
       
-      -- Debugging output
-      DBMS_OUTPUT.PUT_LINE('v_trip_id: ' || v_trip_id);
-      DBMS_OUTPUT.PUT_LINE('p_shuttle_id: ' || p_shuttle_id);
-      
-      INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+      INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
       VALUES (v_trip_id, SYSTIMESTAMP, NULL, C_STATUS_AVAILABLE, p_shuttle_id);
    END create_new_trip;
 
@@ -57,11 +67,11 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    BEGIN
       
       SELECT COUNT(ride_id) INTO v_rider_count FROM rides WHERE trip_id = p_trip_id AND status = C_STATUS_BOOKED;
-      SELECT starttime INTO v_start_time FROM trips where trip_id = p_trip_id;
+      SELECT start_time INTO v_start_time FROM trips where trip_id = p_trip_id;
       
       v_end_time := v_start_time + INTERVAL '2' MINUTE * v_rider_count;
       
-      UPDATE trips SET status = C_STATUS_IN_PROGRESS, endTime = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
+      UPDATE trips SET status = C_STATUS_IN_PROGRESS, end_time = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
       UPDATE rides 
       SET status = C_STATUS_IN_PROGRESS 
       WHERE trip_id IN (
@@ -72,18 +82,19 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       AND status = C_STATUS_BOOKED;
 
       v_record_id := 'smr_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
-      INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
-      VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
+      -- INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
+      -- VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
 
       DBMS_OUTPUT.PUT_LINE('Started trip : ' || p_trip_id || ' that ends at : '|| v_end_time);
       DBMS_OUTPUT.PUT_LINE('Added ' || 20 * v_rider_count ||  ' miles to : '|| p_shuttle_id);
 
    END start_trip;
-
+   
    PROCEDURE book_ride (
-      p_dropoffLocationId IN VARCHAR2,
-      p_user_id           IN VARCHAR2
+      p_dropoff_location_id IN VARCHAR2,
+      p_email             IN VARCHAR2
    ) IS
+      v_user_id VARCHAR2(50);
       v_trip_id VARCHAR2(50);
       v_shuttle_id VARCHAR2(50);
       v_rider_count NUMBER;
@@ -92,123 +103,140 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       v_ride_id VARCHAR2(50);
       v_current_ride_id NUMBER;
    BEGIN
+      -- Check if user exists
+      IF NOT does_user_exist(p_email) THEN
+         RAISE_APPLICATION_ERROR(-20001, 'User with email ' || p_email || ' does not exist.');
+      END IF;
 
-      SELECT TO_CHAR(systimestamp at time zone 'US/Eastern', 'HH24')   
+      -- Get user ID
+      SELECT user_id INTO v_user_id FROM users WHERE email = p_email;
+
+      -- Get current hour in EST
+      SELECT TO_NUMBER(TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'US/Eastern', 'HH24'))   
       INTO v_current_hour
-      from DUAL;
+      FROM DUAL;
 
+      -- Update trip status
       update_trip_status();
 
-      -- Check if the current time is within the allowed booking hours
-      IF v_current_hour BETWEEN 17 AND 23 OR v_current_hour BETWEEN 0 AND 5 THEN
+      -- Check if booking is allowed at current time
+      IF v_current_hour NOT BETWEEN 17 AND 5 THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Booking is only allowed between 5 PM and 5 AM.');
+      END IF;
 
-         -- If the user has an active ride, stop
-         SELECT COUNT(*)
-         INTO v_current_ride_id
-         FROM rides
-         WHERE user_id = p_user_id
-         AND status IN (C_STATUS_BOOKED, C_STATUS_IN_PROGRESS);
+      -- Check if user already has an active ride
+      SELECT COUNT(*)
+      INTO v_current_ride_id
+      FROM rides
+      WHERE user_id = v_user_id
+      AND status IN (C_STATUS_BOOKED, C_STATUS_IN_PROGRESS);
 
-         IF v_current_ride_id > 0 THEN
-         DBMS_OUTPUT.PUT_LINE('User ' || p_user_id || ' already has an active ride.');
-         RETURN;
-         END IF;
+      IF v_current_ride_id > 0 THEN
+         RAISE_APPLICATION_ERROR(-20003, 'User ' || v_user_id || ' already has an active ride.');
+      END IF;
 
-         -- Check for available trips
-         BEGIN 
-            SELECT t.trip_id, shuttle_id, COUNT(ride_id) AS rider_count, startTime
-            INTO v_trip_id, v_shuttle_id, v_rider_count, v_trip_start_time
-            FROM trips t
-            LEFT JOIN rides r ON t.trip_id = r.trip_id
-            WHERE t.status =C_STATUS_AVAILABLE and r.status = C_STATUS_BOOKED
-            GROUP BY t.trip_id, shuttle_id, startTime
-            HAVING COUNT(ride_id) < 2
-            ORDER BY startTime
-            FETCH FIRST 1 ROWS ONLY;
-         EXCEPTION
-            WHEN NO_DATA_FOUND THEN
+      -- Find available trip
+      BEGIN 
+         SELECT t.trip_id, t.shuttle_id, COUNT(r.ride_id) AS rider_count, t.start_time
+         INTO v_trip_id, v_shuttle_id, v_rider_count, v_trip_start_time
+         FROM trips t
+         LEFT JOIN rides r ON t.trip_id = r.trip_id AND r.status = C_STATUS_BOOKED
+         WHERE t.status = C_STATUS_AVAILABLE
+         GROUP BY t.trip_id, t.shuttle_id, t.start_time
+         HAVING COUNT(r.ride_id) < 2
+         ORDER BY t.start_time
+         FETCH FIRST 1 ROW ONLY;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
                v_trip_id := NULL;
-         END;
+      END;
 
-         -- If no trip is available, create a new trip
-         IF v_trip_id IS NULL THEN
-            DBMS_OUTPUT.PUT_LINE('There are no active trips available. Creating a new trip');
-            -- Find an available shuttle
-            BEGIN
+      -- If no trip available, create a new one
+      IF v_trip_id IS NULL THEN
+         -- Find available shuttle
+         BEGIN
                SELECT shuttle_id
                INTO v_shuttle_id
                FROM shuttles s
-               WHERE NOT EXISTS (
+               WHERE EXISTS (
+                  SELECT 1
+                  FROM shifts sh
+                  WHERE sh.shuttle_id = s.shuttle_id
+                  AND sh.start_time <= TO_CHAR(SYSTIMESTAMP, 'HH24:MI:SS')
+                  AND sh.end_time >= TO_CHAR(SYSTIMESTAMP, 'HH24:MI:SS')
+               )
+               AND NOT EXISTS (
                   SELECT 1
                   FROM trips t
                   WHERE t.shuttle_id = s.shuttle_id
                   AND t.status IN (C_STATUS_AVAILABLE, C_STATUS_IN_PROGRESS)
                )
                AND ROWNUM = 1;
-            EXCEPTION
+         EXCEPTION
                WHEN NO_DATA_FOUND THEN
-                  v_shuttle_id := NULL;
-            END;
-            -- If no shuttle is available, raise an exception
-            IF v_shuttle_id IS NULL THEN
-               DBMS_OUTPUT.PUT_LINE('There are no shuttles available and a trip could not be started');
-               RETURN;
-            END IF;
+                  RAISE_APPLICATION_ERROR(-20004, 'No shuttles available. Unable to start a new trip.');
+         END;
 
-            DBMS_OUTPUT.PUT_LINE('Shuttle ' || v_shuttle_id || ' is available');
-            -- CREATE NEW TRIP AND GET THE TRIP ID
-            create_new_trip(v_shuttle_id);
-            SELECT trip_id INTO v_trip_id FROM trips WHERE shuttle_id = v_shuttle_id AND status = C_STATUS_AVAILABLE;
-            DBMS_OUTPUT.PUT_LINE('New trip started with trip_id ' || v_trip_id);
-         END IF;
-
-         DBMS_OUTPUT.PUT_LINE('Found trip available with trip_id ' || v_trip_id);
+         -- Create new trip
+         create_new_trip(v_shuttle_id);
+         SELECT trip_id, start_time 
+         INTO v_trip_id, v_trip_start_time 
+         FROM trips 
+         WHERE shuttle_id = v_shuttle_id AND status = C_STATUS_AVAILABLE;
          
-
-         -- If the trip has been available for more than 3 minutes, mark it as started
-         IF SYSDATE - v_trip_start_time > INTERVAL '3' MINUTE THEN
-            start_trip(v_trip_id, v_shuttle_id);
-            DBMS_OUTPUT.PUT_LINE('Trip has already started. Please try again');
-            RETURN;
-         END IF;
-
-
-         -- Generate a new ride_id
-         v_ride_id := 'RIDE_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
-         -- Book the ride
-         INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, user_id, status)
-         VALUES (v_ride_id, 'L1', p_dropoffLocationId, v_trip_id, p_user_id, C_STATUS_BOOKED);
-         DBMS_OUTPUT.PUT_LINE('Booked a ride for user: '|| p_user_id || ' ride_id: ' || v_ride_id);
-
-         -- IF the trip has 2 riders start the trip
-         IF v_rider_count + 1 = 2 THEN
-            start_trip(v_trip_id, v_shuttle_id);
-         END IF;
-
-      ELSE
-         DBMS_OUTPUT.PUT_LINE('Booking is not allowed before 5 PM and after 5 AM.');
+         v_rider_count := 0;
       END IF;
-   END book_ride;
 
-   
+      -- Check if trip has been available for more than 3 minutes
+      IF SYSTIMESTAMP - v_trip_start_time > INTERVAL '3' MINUTE THEN
+         start_trip(v_trip_id, v_shuttle_id);
+         RAISE_APPLICATION_ERROR(-20005, 'Trip has already started. Please try again.');
+      END IF;
+
+      -- Book the ride
+      v_ride_id := 'RIDE_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF');
+      INSERT INTO rides (ride_id, pickup_location_id, dropoff_location_id, trip_id, user_id, status)
+      VALUES (v_ride_id, 'L1', p_dropoff_location_id, v_trip_id, v_user_id, C_STATUS_BOOKED);
+
+      -- Start trip if it now has 2 riders
+      IF v_rider_count + 1 = 2 THEN
+         start_trip(v_trip_id, v_shuttle_id);
+      END IF;
+
+      COMMIT;
+      DBMS_OUTPUT.PUT_LINE('Ride booked successfully. Ride ID: ' || v_ride_id);
+   EXCEPTION
+      WHEN OTHERS THEN
+         ROLLBACK;
+         RAISE;
+   END book_ride;
+      
 
    PROCEDURE cancel_ride (
-      p_user_id IN VARCHAR2
+      p_email IN VARCHAR2
    ) IS
+      v_user_id VARCHAR2(50);
       v_rider_count NUMBER;
       v_booked_rides NUMBER;
       v_in_progress_rides NUMBER;
    BEGIN
 
+      IF NOT does_user_exist(p_email) THEN
+         RAISE_APPLICATION_ERROR(-20001, 'User with email ' || p_email || ' does not exist.');
+         RETURN;
+      ELSE
+         SELECT user_id INTO v_user_id FROM users WHERE email = p_email;
+      END IF;
+
       BEGIN
          SELECT count(ride_id)
          INTO v_booked_rides
          from RIDES
-         WHERE user_id = p_user_id AND status = C_STATUS_BOOKED;
+         WHERE user_id = v_user_id AND status = C_STATUS_BOOKED;
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             v_booked_rides := 0;
-            DBMS_OUTPUT.PUT_LINE('Rider does not have any available rides');
+            RAISE_APPLICATION_ERROR(-20002, 'No booked rides found for user ' || v_user_id);
             RETURN;
       END;
 
@@ -216,28 +244,20 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
          SELECT count(ride_id)
          INTO v_in_progress_rides
          from RIDES
-         WHERE user_id = p_user_id AND status = C_STATUS_IN_PROGRESS;
+         WHERE user_id = v_user_id AND status = C_STATUS_IN_PROGRESS;
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             v_in_progress_rides := 0;
       END;
 
       IF v_in_progress_rides > 0 THEN
-         DBMS_OUTPUT.PUT_LINE('Cannot cancel a ride that is in progress');
+         RAISE_APPLICATION_ERROR(-20003, 'Cannot cancel ride. Ride is already in progress.');
          RETURN;
       END IF;
 
-      UPDATE rides SET status = C_STATUS_CANCELLED  WHERE user_id = p_user_id AND status = C_STATUS_BOOKED;
-      DBMS_OUTPUT.PUT_LINE('Successfully cancelled booking for user ' || p_user_id);
+      UPDATE rides SET status = C_STATUS_CANCELLED  WHERE user_id = v_user_id AND status = C_STATUS_BOOKED;
+      DBMS_OUTPUT.PUT_LINE('Successfully cancelled booking for user ' || v_user_id);
    END cancel_ride;
-
-   FUNCTION check_shuttle_availability (
-      p_date IN DATE
-   ) RETURN BOOLEAN IS
-      v_count NUMBER;
-   BEGIN
-      SELECT COUNT(*) INTO v_count FROM shuttles WHERE shuttle_id NOT IN (SELECT shuttle_id FROM trips WHERE TRUNC(startTime) = TRUNC(p_date));
-      RETURN v_count > 0;
-   END check_shuttle_availability;
+   
 END ride_management_pkg;
 /
