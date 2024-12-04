@@ -17,7 +17,6 @@ LEFT JOIN
     rides r ON t.trip_id = r.trip_id
 GROUP BY 
     s.shuttle_id, s.model, s.capacity;
-  
 
 --select* from completely_or_partially_booked_shuttles;
 
@@ -47,22 +46,12 @@ ORDER BY
 
 
 CREATE OR REPLACE VIEW upcoming_maintenance_schedule AS
-SELECT 
-    sh.shuttle_id,
-    sh.model AS shuttle_model,
-    sh.capacity,
-    sh.licensePlate,
-    ms.maintenance_id,
-    ms.maintenance_date,
-    ms.description AS maintenance_description
-FROM 
-    shuttles sh
-JOIN 
-    maintenance_schedules ms ON sh.shuttle_id = ms.shuttle_id
-WHERE 
-    ms.maintenance_date >= SYSDATE  -- Only include future maintenance dates
-ORDER BY 
-    ms.maintenance_date ASC;
+SELECT s.LICENSE_PLATE, s.model AS shuttle_model, sm.maintenance_id, sm.MAINTENANCE_DATE
+from MAINTENANCE_SCHEDULES sm
+join shuttles s on s.SHUTTLE_ID = sm.SHUTTLE_ID
+where sm.MAINTENANCE_DATE > SYSDATE
+ORDER BY
+    sm.MAINTENANCE_DATE ASC;
 
 
 CREATE OR REPLACE VIEW most_booked_routes AS
@@ -325,33 +314,27 @@ SELECT * FROM shuttles_due_for_maintenance;
 /*FOR MANAGER
 VIEW: SHUTTLE_DUE_FOR_MAINTENANCE*/
 CREATE OR REPLACE VIEW shuttles_due_for_maintenance AS
+WITH total_mileage AS (
+    SELECT 
+        shuttle_id,
+        SUM(mileage_added) AS total_mileage
+    FROM 
+        shuttle_mileage_records
+    GROUP BY 
+        shuttle_id
+)
 SELECT 
-    s.shuttle_id,
     s.model,
-    s.licensePlate,
-    s.total_mileage,
-    smr.last_maintenance_mileage,
-    (s.total_mileage - COALESCE(smr.last_maintenance_mileage, 0)) AS mileage_since_last_maintenance,
-    CASE 
-        WHEN (s.total_mileage - COALESCE(smr.last_maintenance_mileage, 0)) >= 100 THEN 'Required'
+    s.license_plate,
+    NVL(ms.last_maintenance_mileage, 0) as "Last Maintenance Mileage",
+    COALESCE(tm.total_mileage, 0) AS current_mileage,
+    case
+        when COALESCE(tm.total_mileage, 0) - NVL(ms.last_maintenance_mileage, 0) >= 10 THEN 'Required'
         ELSE 'Not Required'
     END AS maintenance_status
-FROM 
+FROM
     shuttles s
-LEFT JOIN 
-    -- Subquery to fetch the latest maintenance mileage for each shuttle
-    (SELECT 
-         shuttle_id, 
-         MAX(last_maintenance_mileage) AS last_maintenance_mileage 
-     FROM 
-         shuttle_mileage_records 
-     GROUP BY shuttle_id) smr
-ON s.shuttle_id = smr.shuttle_id;
-    
-BEGIN
-    UPDATE_MILEAGE_AND_SCHEDULE_MAINTENANCE('S11', 'T20', 150);
-END;
-/
-
-SELECT * FROM shuttles_due_for_maintenance where shuttle_id='S11';
-
+LEFT OUTER JOIN
+    maintenance_schedules ms ON s.shuttle_id = ms.shuttle_id
+JOIN
+    total_mileage tm ON s.shuttle_id = tm.shuttle_id;

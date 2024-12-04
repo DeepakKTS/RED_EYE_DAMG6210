@@ -29,7 +29,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       UPDATE trips 
       SET status = C_STATUS_COMPLETED
       WHERE status = C_STATUS_IN_PROGRESS
-      AND end_time < SYSTIMESTAMP;
+      AND end_time < SYSDATE;
 
       -- Update rides to completed
       UPDATE rides 
@@ -41,7 +41,13 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       )
       AND status = C_STATUS_IN_PROGRESS;
 
-      
+      DBMS_OUTPUT.PUT_LINE('Updated trip and ride statuses');
+      COMMIT;
+
+      EXCEPTION
+         WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
    RETURN;
    END update_trip_status;
 
@@ -54,6 +60,14 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       
       INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
       VALUES (v_trip_id, SYSTIMESTAMP, NULL, C_STATUS_AVAILABLE, p_shuttle_id);
+
+      DBMS_OUTPUT.PUT_LINE('Created new trip : ' || v_trip_id);
+      COMMIT;
+
+      EXCEPTION
+         WHEN OTHERS THEN
+            ROLLBACK;
+            RAISE;
    END create_new_trip;
 
    PROCEDURE start_trip (
@@ -82,11 +96,17 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       AND status = C_STATUS_BOOKED;
 
       v_record_id := 'smr_' || p_shuttle_id || '_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
-      -- INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
-      -- VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
+      INSERT INTO shuttle_mileage_records (record_id, shuttle_id, trip_id, mileage_added, updated_at)
+      VALUES (v_record_id, p_shuttle_id, p_trip_id, 20 * v_rider_count, SYSTIMESTAMP);
 
       DBMS_OUTPUT.PUT_LINE('Started trip : ' || p_trip_id || ' that ends at : '|| v_end_time);
       DBMS_OUTPUT.PUT_LINE('Added ' || 20 * v_rider_count ||  ' miles to : '|| p_shuttle_id);
+
+      COMMIT;
+   EXCEPTION
+      WHEN OTHERS THEN
+         ROLLBACK;
+         RAISE;
 
    END start_trip;
    
@@ -120,8 +140,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       update_trip_status();
 
       -- Check if booking is allowed at current time
-      IF v_current_hour NOT BETWEEN 17 AND 5 THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Booking is only allowed between 5 PM and 5 AM.');
+      IF v_current_hour NOT BETWEEN 6 AND 18 THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Booking is only allowed between 6 AM and 6 PM.');
       END IF;
 
       -- Check if user already has an active ride
@@ -162,8 +182,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
                   SELECT 1
                   FROM shifts sh
                   WHERE sh.shuttle_id = s.shuttle_id
-                  AND sh.start_time <= TO_CHAR(SYSTIMESTAMP, 'HH24:MI:SS')
-                  AND sh.end_time >= TO_CHAR(SYSTIMESTAMP, 'HH24:MI:SS')
+                  AND trunc(sh.start_time) = trunc(SYSTIMESTAMP)
                )
                AND NOT EXISTS (
                   SELECT 1
@@ -177,6 +196,12 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
                   RAISE_APPLICATION_ERROR(-20004, 'No shuttles available. Unable to start a new trip.');
          END;
 
+         -- Check if trip has been available for more than 3 minutes
+         IF SYSTIMESTAMP - v_trip_start_time > INTERVAL '3' MINUTE THEN
+            start_trip(v_trip_id, v_shuttle_id);
+            DBMS_OUTPUT.PUT_LINE('Trip ' || v_trip_id || ' has been started. Creating new trip.');
+         END IF;
+
          -- Create new trip
          create_new_trip(v_shuttle_id);
          SELECT trip_id, start_time 
@@ -185,12 +210,6 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
          WHERE shuttle_id = v_shuttle_id AND status = C_STATUS_AVAILABLE;
          
          v_rider_count := 0;
-      END IF;
-
-      -- Check if trip has been available for more than 3 minutes
-      IF SYSTIMESTAMP - v_trip_start_time > INTERVAL '3' MINUTE THEN
-         start_trip(v_trip_id, v_shuttle_id);
-         RAISE_APPLICATION_ERROR(-20005, 'Trip has already started. Please try again.');
       END IF;
 
       -- Book the ride
@@ -257,6 +276,11 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
 
       UPDATE rides SET status = C_STATUS_CANCELLED  WHERE user_id = v_user_id AND status = C_STATUS_BOOKED;
       DBMS_OUTPUT.PUT_LINE('Successfully cancelled booking for user ' || v_user_id);
+      COMMIT;
+   EXCEPTION
+      WHEN OTHERS THEN
+         ROLLBACK;
+         RAISE;
    END cancel_ride;
    
 END ride_management_pkg;

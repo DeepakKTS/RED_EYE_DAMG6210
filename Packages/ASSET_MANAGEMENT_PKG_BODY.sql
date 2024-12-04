@@ -8,16 +8,17 @@ create or replace PACKAGE BODY asset_management_pkg IS
    FUNCTION does_user_exist(p_email IN users.email%TYPE) RETURN BOOLEAN IS
    v_user_id VARCHAR2(50);
    BEGIN
-      SELECT user_id
-      INTO v_user_id
-      FROM users
-      WHERE email = p_email;
+      BEGIN
+         SELECT user_id
+         INTO v_user_id
+         FROM users
+         WHERE email = p_email;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+      END;
 
-      IF v_user_id IS NULL THEN
-         RETURN FALSE;
-      ELSE
-         RETURN TRUE;
-      END IF;
+   RETURN TRUE;
    END does_user_exist;
 
    -- Add new users
@@ -31,6 +32,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
    v_user_role_id VARCHAR2(50);
    BEGIN
 
+
       IF p_name IS NULL OR p_email IS NULL OR p_phone IS NULL THEN
          DBMS_OUTPUT.PUT_LINE('Name, Email, and Phone cannot be null.');
          RETURN;
@@ -41,7 +43,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
          RETURN;
       END IF;
 
-      v_user_id := 'USER_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      v_user_id := 'USER_' || p_email;
       v_role_id := 'R4';
       v_user_role_id := 'UR_' || v_user_id || '_' || v_role_id;
 
@@ -80,7 +82,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
          RETURN;
       END IF;
 
-      v_driver_id := 'DRIVER_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      v_driver_id := 'DRIVER_' || p_email;
       v_role_id := 'R2';
       v_user_role_id := 'UR_' || v_driver_id || '_' || v_role_id;
 
@@ -197,16 +199,17 @@ create or replace PACKAGE BODY asset_management_pkg IS
    FUNCTION does_location_exist(p_name IN locations.name%TYPE) RETURN BOOLEAN IS
    v_location_id VARCHAR2(50);
    BEGIN
-      SELECT location_id
-      INTO v_location_id
-      FROM locations
-      WHERE name = p_name;
-
-      IF v_location_id IS NULL THEN
-         RETURN FALSE;
-      ELSE
-         RETURN TRUE;
-      END IF;
+      BEGIN
+         SELECT location_id
+         INTO v_location_id
+         FROM locations
+         WHERE name = p_name;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+      END;
+   
+   RETURN TRUE;
    END does_location_exist;
 
    -- Add new location
@@ -288,16 +291,18 @@ create or replace PACKAGE BODY asset_management_pkg IS
    FUNCTION does_shuttle_exist(p_license_plate IN shuttles.license_plate%TYPE) RETURN BOOLEAN IS
    v_shuttle_id VARCHAR2(50);
    BEGIN
-      SELECT shuttle_id
-      INTO v_shuttle_id
-      FROM shuttles
-      WHERE license_plate = p_license_plate;
+      BEGIN
+         SELECT shuttle_id
+         INTO v_shuttle_id
+         FROM shuttles
+         WHERE license_plate = p_license_plate;
 
-      IF v_shuttle_id IS NULL THEN
-         RETURN FALSE;
-      ELSE
-         RETURN TRUE;
-      END IF;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            RETURN FALSE;
+      END;
+
+   RETURN TRUE;
    END does_shuttle_exist;
 
    -- Add new shuttle
@@ -312,7 +317,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
          RETURN;
       END IF;
 
-      v_shuttle_id := 'SHUTTLE_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      v_shuttle_id := 'SHUTTLE_' || p_license_plate;
 
       IF does_shuttle_exist(p_license_plate) THEN
          RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' already exists.');
@@ -349,5 +354,70 @@ create or replace PACKAGE BODY asset_management_pkg IS
       DBMS_OUTPUT.PUT_LINE('Successfully deleted shuttle : ' || p_license_plate);
       COMMIT;
    END;
+
+
+   -- Procedure to update shuttle mileage and schedule maintenance
+   PROCEDURE schedule_vehicle_maintenance(
+      p_license_plate IN shuttles.license_plate%TYPE,
+      p_maintenance_date IN maintenance_schedules.maintenance_date%TYPE 
+   ) IS
+      v_shuttle_id VARCHAR2(50);
+      v_maintenance_required VARCHAR2(50);
+      v_total_mileage NUMBER;
+      v_next_maintenance_date DATE;
+      v_maintenance_id VARCHAR2(50);
+      v_schedule_maintenance_date DATE;
+   BEGIN
+
+      IF p_license_plate IS NULL THEN
+         RAISE_APPLICATION_ERROR(-20001, 'License Plate cannot be null.');
+         RETURN;
+      END IF;
+
+      IF NOT does_shuttle_exist(p_license_plate) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' does not exist.');
+         RETURN;
+      END IF;
+
+      IF p_maintenance_date IS NULL THEN
+         v_next_maintenance_date := SYSDATE + INTERVAL '1' DAY;
+      END IF;
+
+      IF p_maintenance_date < SYSDATE THEN
+         RAISE_APPLICATION_ERROR(-20003, 'Maintenance date cannot be in the past.');
+         RETURN;
+      END IF;
+
+      -- Get shuttle ID
+      SELECT shuttle_id
+      INTO v_shuttle_id
+      FROM shuttles
+      WHERE license_plate = p_license_plate;
+
+      
+      SELECT maintenance_status, CURRENT_MILEAGE
+      INTO v_maintenance_required, v_total_mileage
+      from shuttles_due_for_maintenance
+      WHERE LICENSE_PLATE = p_license_plate;
+
+   IF v_maintenance_required = 'Required' THEN
+      -- Schedule maintenance
+      v_next_maintenance_date := p_maintenance_date;
+      
+
+      v_maintenance_id := 'MNT_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI');
+      INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, LAST_MAINTENANCE_MILEAGE, maintenance_date, description)
+      VALUES (v_maintenance_id, v_shuttle_id, v_total_mileage, v_next_maintenance_date, 'Routine maintenance');
+
+      DBMS_OUTPUT.PUT_LINE('Maintenance scheduled for shuttle: ' || p_license_plate);
+      COMMIT;
+   ELSE
+      DBMS_OUTPUT.PUT_LINE('No maintenance required for shuttle: ' || p_license_plate);
+   END IF;
+   EXCEPTION
+      WHEN OTHERS THEN
+         ROLLBACK;
+         RAISE;
+END;
 
 END asset_management_pkg;

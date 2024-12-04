@@ -1,4 +1,5 @@
 create or replace PACKAGE asset_management_pkg IS
+
    -- Procedure to add new users
    PROCEDURE add_new_user (
       p_name IN users.name%TYPE,
@@ -57,6 +58,12 @@ create or replace PACKAGE asset_management_pkg IS
    -- Procedure to delete shuttle
    PROCEDURE delete_shuttle (
       p_license_plate IN shuttles.license_plate%TYPE
+   );
+
+   -- Procedure to schedule vehicle maintenance
+   PROCEDURE schedule_vehicle_maintenance (
+      p_license_plate IN shuttles.license_plate%TYPE,
+      p_maintenance_date IN maintenance_schedules.maintenance_date%TYPE 
    );
 
 END asset_management_pkg;

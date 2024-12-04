@@ -7,7 +7,7 @@ BEGIN
         WHERE table_name IN (
             'SHIFTS', 'MAINTENANCE_SCHEDULES', 'THIRD_PARTY_SERVICES', 
             'DRIVERS', 'RIDES', 'TRIPS', 'SHUTTLES', 'LOCATIONS', 
-            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS'
+            'PERMISSIONS', 'USER_ROLES', 'ROLES', 'USERS', 'SHUTTLE_MILEAGE_RECORDS'
         )
     ) LOOP
         EXECUTE IMMEDIATE 'DROP TABLE ' || table_name.table_name || ' CASCADE CONSTRAINTS';
@@ -56,6 +56,7 @@ CREATE TABLE drivers (
     user_role_id VARCHAR2(50) UNIQUE,
     license_number VARCHAR2(50) UNIQUE,
     tp_id VARCHAR2(50),
+    is_active NUMBER(1) DEFAULT 1,
     FOREIGN KEY (user_role_id) REFERENCES user_roles(user_role_id), -- Connect to user_roles
     FOREIGN KEY (tp_id) REFERENCES third_party_services(tp_id) -- Connect to third_party_services
 );
@@ -120,11 +121,25 @@ CREATE TABLE shifts (
     FOREIGN KEY (driver_id) REFERENCES drivers(driver_id) ON DELETE SET NULL -- Removing a driver nullifies the shift reference
 );
 
+
 -- MAINTENANCE SCHEDULES TABLE (References SHUTTLES)
 CREATE TABLE maintenance_schedules (
     maintenance_id VARCHAR2(50) PRIMARY KEY,
     shuttle_id VARCHAR2(50),
+    last_maintenance_mileage NUMBER,
     maintenance_date DATE,
     description VARCHAR2(255),
     FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id) ON DELETE CASCADE
+);
+
+
+-- SHUTTLE MILEAGE RECORDS TABLE (References SHUTTLES)
+CREATE TABLE shuttle_mileage_records (
+    record_id VARCHAR2(50) PRIMARY KEY,
+    shuttle_id VARCHAR2(50),
+    trip_id VARCHAR2(50),
+    mileage_added NUMBER,
+    updated_at TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shuttle_id FOREIGN KEY (shuttle_id) REFERENCES shuttles(shuttle_id),
+    CONSTRAINT fk_trip_id FOREIGN KEY (trip_id) REFERENCES trips(trip_id)
 );
