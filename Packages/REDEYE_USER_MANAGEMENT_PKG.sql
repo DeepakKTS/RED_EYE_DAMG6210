@@ -1,26 +1,24 @@
-create or replace PACKAGE redeye_user_management_pkg IS
-   -- Users table operations
-   PROCEDURE manage_user (
-      p_user_id   IN VARCHAR2,
-      p_name      IN VARCHAR2 DEFAULT NULL,
-      p_email     IN VARCHAR2 DEFAULT NULL,
-      p_phone     IN VARCHAR2 DEFAULT NULL,
-      p_userType  IN VARCHAR2 DEFAULT NULL,
-      p_action    IN VARCHAR2
+CREATE OR REPLACE PACKAGE redeye_user_management_pkg IS
+   -- Procedure to update user details
+   PROCEDURE update_user (
+      p_name IN users.name%TYPE DEFAULT NULL,
+      p_email IN users.email%TYPE DEFAULT NULL,
+      p_phone IN users.phone%TYPE DEFAULT NULL
    );
 
-   -- Roles table operations
-   PROCEDURE manage_role (
-      p_role_id   IN VARCHAR2,
-      p_name      IN VARCHAR2 DEFAULT NULL,
-      p_action    IN VARCHAR2
-   );
-
-   -- User Roles table operations
-   PROCEDURE manage_user_role (
-      p_user_role_id IN VARCHAR2,
-      p_role_id      IN VARCHAR2 DEFAULT NULL,
-      p_user_id      IN VARCHAR2 DEFAULT NULL,
-      p_action       IN VARCHAR2
-   );
 END redeye_user_management_pkg;
+/
+
+-- Package Body
+CREATE OR REPLACE PACKAGE BODY redeye_user_management_pkg IS
+   PROCEDURE update_user (
+      p_name IN users.name%TYPE DEFAULT NULL,
+      p_email IN users.email%TYPE DEFAULT NULL,
+      p_phone IN users.phone%TYPE DEFAULT NULL
+   ) IS
+   BEGIN
+      assets_management_pkg.update_user(p_name, p_email, p_phone);
+   END update_user;
+
+END redeye_user_management_pkg;
+/

@@ -5,8 +5,8 @@ create or replace PACKAGE service_management_pkg IS
       p_shift_id   IN VARCHAR2,
       p_shuttle_id IN VARCHAR2 DEFAULT NULL,
       p_driver_id  IN VARCHAR2 DEFAULT NULL,
-      p_startTime  IN TIMESTAMP DEFAULT NULL,
-      p_endTime    IN TIMESTAMP DEFAULT NULL,
+      p_start_time  IN TIMESTAMP DEFAULT NULL,
+      p_end_time    IN TIMESTAMP DEFAULT NULL,
       p_action     IN VARCHAR2
    );
 
@@ -14,7 +14,7 @@ create or replace PACKAGE service_management_pkg IS
    PROCEDURE manage_maintenance_schedule (
       p_maintenance_id IN VARCHAR2,
       p_shuttle_id     IN VARCHAR2 DEFAULT NULL,
-      p_maintenanceDate IN DATE DEFAULT NULL,
+      p_maintenance_date IN DATE DEFAULT NULL,
       p_description    IN VARCHAR2 DEFAULT NULL,
       p_action         IN VARCHAR2
    );

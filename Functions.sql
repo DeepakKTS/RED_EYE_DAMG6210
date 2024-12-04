@@ -13,7 +13,7 @@ CREATE OR REPLACE FUNCTION CHECK_DRIVER_REST_ELIGIBILITY (
     rest_period_in_hours NUMBER;      -- Stores the calculated rest period in hours
 BEGIN
     -- Get the end time of the driver's last trip by linking through shifts and shuttles
-    SELECT MAX(t.endTime)
+    SELECT MAX(t.end_time)
     INTO last_trip_end_time
     FROM trips t
     JOIN shuttles s ON t.shuttle_id = s.shuttle_id
@@ -45,4 +45,3 @@ EXCEPTION
         RETURN 'Error: ' || SQLERRM;
 END;
 /
-
