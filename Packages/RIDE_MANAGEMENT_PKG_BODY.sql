@@ -11,10 +11,15 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    FUNCTION does_user_exist(p_email IN users.email%TYPE) RETURN BOOLEAN IS
       v_user_id VARCHAR2(50);
    BEGIN
-      SELECT user_id
-      INTO v_user_id
-      FROM users
-      WHERE email = p_email;
+      BEGIN
+         SELECT user_id
+         INTO v_user_id
+         FROM users
+         WHERE email = p_email;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            v_user_id := NULL;
+      END;
 
       IF v_user_id IS NULL THEN
          RETURN FALSE;
@@ -22,6 +27,26 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
          RETURN TRUE;
       END IF;
    END does_user_exist;
+
+   FUNCTION does_location_exist(p_location_name IN locations.name%TYPE) RETURN BOOLEAN IS
+      v_location_id VARCHAR2(50);
+   BEGIN
+      BEGIN
+         SELECT location_id
+         INTO v_location_id
+         FROM locations
+         WHERE name = p_location_name;
+      EXCEPTION
+         WHEN NO_DATA_FOUND THEN
+            v_location_id := NULL;
+      END;
+
+      IF v_location_id IS NULL THEN
+         RETURN FALSE;
+      ELSE
+         RETURN TRUE;
+      END IF;
+   END does_location_exist;
 
    PROCEDURE update_trip_status IS
    BEGIN
@@ -111,10 +136,11 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    END start_trip;
    
    PROCEDURE book_ride (
-      p_dropoff_location_id IN VARCHAR2,
-      p_email             IN VARCHAR2
+      p_email                 IN VARCHAR2,
+      p_dropoff_location_name IN VARCHAR2
    ) IS
       v_user_id VARCHAR2(50);
+      v_dropoff_location_id VARCHAR2(50);
       v_trip_id VARCHAR2(50);
       v_shuttle_id VARCHAR2(50);
       v_rider_count NUMBER;
@@ -130,6 +156,14 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
 
       -- Get user ID
       SELECT user_id INTO v_user_id FROM users WHERE email = p_email;
+
+      -- Check if dropoff location exists
+      IF NOT does_location_exist(p_dropoff_location_name) THEN
+         RAISE_APPLICATION_ERROR(-20002, 'Location ' || p_dropoff_location_name || ' does not exist.');
+      END IF;
+
+      -- Get location ID
+      SELECT location_id INTO v_dropoff_location_id FROM locations WHERE name = p_dropoff_location_name;
 
       -- Get current hour in EST
       SELECT TO_NUMBER(TO_CHAR(SYSTIMESTAMP AT TIME ZONE 'US/Eastern', 'HH24'))   
@@ -215,7 +249,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       -- Book the ride
       v_ride_id := 'RIDE_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISSFF');
       INSERT INTO rides (ride_id, pickup_location_id, dropoff_location_id, trip_id, user_id, status)
-      VALUES (v_ride_id, 'L1', p_dropoff_location_id, v_trip_id, v_user_id, C_STATUS_BOOKED);
+      VALUES (v_ride_id, 'L1', v_dropoff_location_id, v_trip_id, v_user_id, C_STATUS_BOOKED);
 
       -- Start trip if it now has 2 riders
       IF v_rider_count + 1 = 2 THEN

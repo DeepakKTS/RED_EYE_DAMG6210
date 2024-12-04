@@ -1,15 +1,15 @@
-CREATE OR REPLACE PACKAGE ride_management_pkg IS
+create or replace package ride_management_pkg is
 
    -- Procedure to book a ride
-   PROCEDURE book_ride (
-      p_dropoff_location_id IN VARCHAR2,
-      p_email             IN VARCHAR2
+   procedure book_ride (
+      p_email         in varchar2,
+      p_dropoff_location_name in varchar2
    );
 
    -- Procedure to handle ride cancellations
-   PROCEDURE cancel_ride (
-      p_email IN VARCHAR2
+   procedure cancel_ride (
+      p_email in varchar2
    );
 
-END ride_management_pkg;
+end ride_management_pkg;
 /
