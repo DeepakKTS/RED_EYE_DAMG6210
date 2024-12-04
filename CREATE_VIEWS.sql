@@ -329,7 +329,7 @@ SELECT
     NVL(ms.last_maintenance_mileage, 0) as "Last Maintenance Mileage",
     COALESCE(tm.total_mileage, 0) AS current_mileage,
     case
-        when COALESCE(tm.total_mileage, 0) - NVL(ms.last_maintenance_mileage, 0) >= 10 THEN 'Required'
+        when COALESCE(tm.total_mileage, 0) - NVL(ms.last_maintenance_mileage, 0) >= 50 THEN 'Required'
         ELSE 'Not Required'
     END AS maintenance_status
 FROM

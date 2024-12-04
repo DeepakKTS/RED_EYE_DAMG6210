@@ -11,12 +11,13 @@ SELECT * FROM rides;
 SELECT * FROM SHUTTLE_MILEAGE_RECORDS;
 
 SELECT SYSTIMESTAMP FROM DUAL;
+SELECT * FROM SHIFTS;
 
 BEGIN
   -- Test booking a ride
   RIDE_MANAGEMENT_PKG.book_ride(
-    'L5',
-    'chris@example.com'
+    'jane@example.com',
+    'Main Campus'
   );
 
   -- -- Verify the ride was booked
