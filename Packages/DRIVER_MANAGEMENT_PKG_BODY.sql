@@ -91,35 +91,38 @@ create or replace PACKAGE BODY driver_management_pkg AS
     END ASSIGN_BACKUP_DRIVERS;
 
     -- Procedure to enforce background check for drivers
-    PROCEDURE ENFORCE_DRIVER_BACKGROUND_CHECK (driver_id IN drivers.driver_id%TYPE) IS
-        license_number drivers.licence_number%TYPE;
+   PROCEDURE ENFORCE_DRIVER_BACKGROUND_CHECK (driver_id IN drivers.driver_id%TYPE) IS
+    license_number drivers.licenseNumber%TYPE;
+BEGIN
+    -- Fetch the driver's license number from the drivers table
     BEGIN
-        -- Fetch the driver's license number from the drivers table
-        BEGIN
-            SELECT licence_number
-            INTO license_number
-            FROM drivers
-            WHERE driver_id = driver_id;
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-                RAISE_APPLICATION_ERROR(-20008, 'Driver ID not found in drivers table.');
-        END;
+        SELECT licenseNumber
+        INTO license_number
+        FROM drivers
+        WHERE driver_id = driver_id;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            RAISE_APPLICATION_ERROR(-20008, 'Driver ID not found in drivers table.');
+    END;
 
-        -- Check the license number and set the verification_flag
-        IF license_number IS NULL OR LENGTH(license_number) < 10 THEN
-            -- Mark verification flag as 'NO' if license number is invalid
-            UPDATE drivers
-            SET verification_flag = 'NO'
-            WHERE driver_id = driver_id;
+    -- Check if the license number is NULL
+    IF license_number IS NULL THEN
+        -- Raise an error if the license number is mandatory but missing
+        RAISE_APPLICATION_ERROR(-20010, 'License number is mandatory.');
+    ELSIF LENGTH(license_number) < 10 THEN
+        -- Mark verification flag as 'NO' and raise an error if the license number is invalid
+        UPDATE drivers
+        SET verification_flag = 'NO'
+        WHERE driver_id = driver_id;
 
-            RAISE_APPLICATION_ERROR(-20009, 'Invalid license number. Verification flag set to NO.');
-        ELSE
-            -- Mark verification flag as 'YES' if license number is valid (10 or more digits)
-            UPDATE drivers
-            SET verification_flag = 'YES'
-            WHERE driver_id = driver_id;
-        END IF;
+        RAISE_APPLICATION_ERROR(-20009, 'Invalid license number. Verification flag set to NO.');
+    ELSE
+        -- Mark verification flag as 'YES' if the license number is valid (10 or more digits)
+        UPDATE drivers
+        SET verification_flag = 'YES'
+        WHERE driver_id = driver_id;
+    END IF;
 
-    END ENFORCE_DRIVER_BACKGROUND_CHECK;
+END ENFORCE_DRIVER_BACKGROUND_CHECK;
 
 END driver_management_pkg;
