@@ -90,4 +90,24 @@ GROUP BY
 ORDER BY
     total_trips_taken DESC, total_hours_worked DESC;
 
+----The `MostUsedShuttles` view displays each shuttle's ID, model, license plate, capacity, total mileage,
+-- and the count of shifts it was used for, ordered by the most frequently used shuttles.
+CREATE OR REPLACE VIEW MostUsedShuttles AS
+SELECT
+    s.shuttle_id,
+    s.model,
+    s.licensePlate,
+    s.capacity,
+    s.total_mileage,
+    COUNT(sh.shift_id) AS times_used -- Count the number of shifts associated with the shuttle
+FROM
+    shuttles s
+LEFT JOIN
+    shifts sh ON s.shuttle_id = sh.shuttle_id -- Join shuttles with shifts
+GROUP BY
+    s.shuttle_id, s.model, s.licensePlate, s.capacity, s.total_mileage
+ORDER BY
+    times_used DESC; -- Order by most used shuttles
+
+ 
  
