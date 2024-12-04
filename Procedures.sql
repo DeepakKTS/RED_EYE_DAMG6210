@@ -19,7 +19,7 @@ CREATE OR REPLACE PROCEDURE schedule_vehicle_maintenance IS
            OR shuttle_id NOT IN (
                SELECT shuttle_id 
                FROM maintenance_schedules 
-               WHERE maintenanceDate >= SYSDATE
+               WHERE maintenance_date >= SYSDATE
            ); -- No upcoming maintenance scheduled
 BEGIN
     OPEN overdue_shuttles;
@@ -32,7 +32,7 @@ BEGIN
         v_next_maintenance_date := SYSDATE + INTERVAL '7' DAY; -- Schedule one week from today
 
         -- Use a sequence to ensure unique maintenance IDs
-        INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+        INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenance_date, description)
         VALUES (
             'MNT_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI') || '_' || TO_CHAR(DBMS_RANDOM.VALUE(1000, 9999), 'FM0000'),
             v_shuttle_id,
@@ -54,15 +54,15 @@ This ensures that high-demand routes are assigned more shuttles and resources, o
 
 CREATE OR REPLACE PROCEDURE priority_routing IS
     CURSOR route_demand IS
-        SELECT r.pickupLocationId, r.dropoffLocationId, COUNT(r.ride_id) AS total_rides
+        SELECT r.pickup_location_id, r.dropoff_location_id, COUNT(r.ride_id) AS total_rides
         FROM rides r
         JOIN trips t ON r.trip_id = t.trip_id
-        WHERE t.startTime BETWEEN SYSDATE - INTERVAL '1' DAY AND SYSDATE -- Analyze recent demand
-        GROUP BY r.pickupLocationId, r.dropoffLocationId
+        WHERE t.start_time BETWEEN SYSDATE - INTERVAL '1' DAY AND SYSDATE -- Analyze recent demand
+        GROUP BY r.pickup_location_id, r.dropoff_location_id
         ORDER BY total_rides DESC; -- Prioritize high-demand routes
 
-    v_pickup_location rides.pickupLocationId%TYPE;
-    v_dropoff_location rides.dropoffLocationId%TYPE;
+    v_pickup_location rides.pickup_location_id%TYPE;
+    v_dropoff_location rides.dropoff_location_id%TYPE;
     v_total_rides NUMBER;
     v_shuttle_id shuttles.shuttle_id%TYPE;
 
@@ -72,7 +72,7 @@ CREATE OR REPLACE PROCEDURE priority_routing IS
         WHERE shuttle_id NOT IN (
             SELECT shuttle_id
             FROM trips
-            WHERE startTime BETWEEN SYSDATE AND SYSDATE + INTERVAL '1' DAY
+            WHERE start_time BETWEEN SYSDATE AND SYSDATE + INTERVAL '1' DAY
         ); -- Only consider shuttles not currently scheduled
 BEGIN
     OPEN route_demand;
@@ -86,7 +86,7 @@ BEGIN
         EXIT WHEN available_shuttles%NOTFOUND; -- Stop if no more shuttles are available
 
         -- Assign the shuttle to the route
-        INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+        INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
         VALUES (
             'T_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
             SYSDATE + INTERVAL '1' HOUR, -- Schedule one hour from now
@@ -121,8 +121,8 @@ CREATE OR REPLACE PROCEDURE emergency_notifications (
         JOIN rides r ON u.user_id = r.user_id
         JOIN trips t ON r.trip_id = t.trip_id
         WHERE t.shuttle_id = p_shuttle_id
-          AND t.startTime <= SYSDATE
-          AND t.endTime >= SYSDATE;
+          AND t.start_time <= SYSDATE
+          AND t.end_time >= SYSDATE;
 
 BEGIN
     -- Fetch shuttle details
@@ -186,7 +186,7 @@ CREATE OR REPLACE PROCEDURE waitlist_notifications IS
 
     -- Cursor to find available shuttles
     CURSOR available_shuttles IS
-        SELECT s.shuttle_id, r.pickupLocationId, r.dropoffLocationId
+        SELECT s.shuttle_id, r.pickup_location_id, r.dropoff_location_id
         FROM shuttles s
         JOIN trips t ON s.shuttle_id = t.shuttle_id
         JOIN rides r ON t.trip_id = r.trip_id
@@ -199,11 +199,11 @@ CREATE OR REPLACE PROCEDURE waitlist_notifications IS
           AND r.status = 'Waitlisted';
 
     -- Cursor to find users on the waitlist
-    CURSOR waitlist_users (p_pickupLocationId VARCHAR2, p_dropoffLocationId VARCHAR2) IS
+    CURSOR waitlist_users (p_pickup_location_id VARCHAR2, p_dropoff_location_id VARCHAR2) IS
         SELECT user_id
         FROM rides
-        WHERE pickupLocationId = p_pickupLocationId
-          AND dropoffLocationId = p_dropoffLocationId
+        WHERE pickup_location_id = p_pickup_location_id
+          AND dropoff_location_id = p_dropoff_location_id
           AND status = 'Waitlisted';
 
 BEGIN
@@ -233,8 +233,8 @@ BEGIN
             UPDATE rides
             SET status = 'Booked'
             WHERE user_id = v_waitlist_user_id
-              AND pickupLocationId = v_route_pickup
-              AND dropoffLocationId = v_route_dropoff
+              AND pickup_location_id = v_route_pickup
+              AND dropoff_location_id = v_route_dropoff
               AND status = 'Waitlisted';
 
             -- Commit the update
@@ -265,10 +265,10 @@ It reallocates shuttles from underutilized routes to high-demand routes, ensurin
 
 CREATE OR REPLACE PROCEDURE route_capacity_optimization IS
     CURSOR high_demand_routes IS
-        SELECT pickupLocationId, dropoffLocationId, COUNT(*) AS demand
+        SELECT pickup_location_id, dropoff_location_id, COUNT(*) AS demand
         FROM rides
         WHERE status = 'Waitlisted'
-        GROUP BY pickupLocationId, dropoffLocationId
+        GROUP BY pickup_location_id, dropoff_location_id
         ORDER BY demand DESC;
 
     CURSOR underutilized_shuttles IS
@@ -276,7 +276,7 @@ CREATE OR REPLACE PROCEDURE route_capacity_optimization IS
         FROM shuttles s
         LEFT JOIN trips t ON s.shuttle_id = t.shuttle_id
         LEFT JOIN rides r ON t.trip_id = r.trip_id
-        WHERE t.startTime >= SYSDATE
+        WHERE t.start_time >= SYSDATE
         GROUP BY s.shuttle_id, s.model
         HAVING COUNT(r.ride_id) < (s.capacity * 0.5) -- Less than 50% utilization
         ORDER BY current_rides ASC;
@@ -291,8 +291,8 @@ BEGIN
 
     -- Process high-demand routes
     FOR high_demand IN high_demand_routes LOOP
-        v_route_pickup := high_demand.pickupLocationId;
-        v_route_dropoff := high_demand.dropoffLocationId;
+        v_route_pickup := high_demand.pickup_location_id;
+        v_route_dropoff := high_demand.dropoff_location_id;
         v_demand := high_demand.demand;
 
         -- Log the high-demand route
@@ -307,7 +307,7 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('Reassigning Shuttle: ' || v_shuttle_id || ' (' || v_model || ') to Route: ' || v_route_pickup || ' -> ' || v_route_dropoff);
 
             -- Update the shuttle assignment
-            INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+            INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
             VALUES (
                 'TRIP_' || v_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI'),
                 SYSDATE + INTERVAL '1' HOUR,
@@ -328,21 +328,21 @@ END;
 /*Procedure 7:Auto Schedule Rides.The AUTO_SCHEDULE_RIDES procedure automates the assignment of unscheduled rides to available trips based on predefined conditions. The procedure ensures operational efficiency by scheduling rides in a way that matches their pickup and drop-off locations to appropriate trips. It updates the status of rides and assigns them to trips dynamically. */
 CREATE OR REPLACE PROCEDURE auto_schedule_rides IS
     CURSOR unscheduled_rides IS
-        SELECT ride_id, pickupLocationId, dropoffLocationId
+        SELECT ride_id, pickup_location_id, dropoff_location_id
         FROM rides
         WHERE status = 'Unscheduled';
 
     v_trip_id trips.trip_id%TYPE;
     v_shuttle_id trips.shuttle_id%TYPE;
     v_ride_id rides.ride_id%TYPE;
-    v_pickupLocationId rides.pickupLocationId%TYPE;
-    v_dropoffLocationId rides.dropoffLocationId%TYPE;
+    v_pickup_location_id rides.pickup_location_id%TYPE;
+    v_dropoff_location_id rides.dropoff_location_id%TYPE;
     v_capacity_remaining NUMBER;
 BEGIN
     FOR ride_record IN unscheduled_rides LOOP
         v_ride_id := ride_record.ride_id;
-        v_pickupLocationId := ride_record.pickupLocationId;
-        v_dropoffLocationId := ride_record.dropoffLocationId;
+        v_pickup_location_id := ride_record.pickup_location_id;
+        v_dropoff_location_id := ride_record.dropoff_location_id;
 
         -- Find a suitable trip with capacity
         BEGIN
@@ -384,24 +384,24 @@ END;
 
 SELECT * FROM rides WHERE status = 'Scheduled';
 
-INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
 VALUES ('T3', TO_TIMESTAMP('2024-12-01 05:00:00', 'YYYY-MM-DD HH24:MI:SS'),
               TO_TIMESTAMP('2024-12-01 07:00:00', 'YYYY-MM-DD HH24:MI:SS'),
               'Scheduled', 'S3');
 
-INSERT INTO trips (trip_id, startTime, endTime, status, shuttle_id)
+INSERT INTO trips (trip_id, start_time, end_time, status, shuttle_id)
 VALUES ('T4', TO_TIMESTAMP('2024-12-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'),
               TO_TIMESTAMP('2024-12-01 10:00:00', 'YYYY-MM-DD HH24:MI:SS'),
               'Scheduled', 'S4');
 
 -- Insert unscheduled rides linked to the placeholder trips
-INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+INSERT INTO rides (ride_id, pickup_location_id, dropoff_location_id, trip_id, status)
 VALUES ('R4', 'L1', 'L3', 'T3', 'Unscheduled');
 
-INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+INSERT INTO rides (ride_id, pickup_location_id, dropoff_location_id, trip_id, status)
 VALUES ('R5', 'L2', 'L4', 'T4', 'Unscheduled');
 
-INSERT INTO rides (ride_id, pickupLocationId, dropoffLocationId, trip_id, status)
+INSERT INTO rides (ride_id, pickup_location_id, dropoff_location_id, trip_id, status)
 VALUES ('R6', 'L3', 'L5', 'T4', 'Unscheduled');
 
 
@@ -427,7 +427,7 @@ BEGIN
     INTO v_is_under_maintenance
     FROM maintenance_schedules
     WHERE shuttle_id = v_current_shuttle_id
-      AND maintenanceDate = TRUNC(SYSDATE);
+      AND maintenance_date = TRUNC(SYSDATE);
 
     -- Step 3: If the shuttle is under maintenance, reassign it
     IF v_is_under_maintenance > 0 THEN
@@ -439,7 +439,7 @@ BEGIN
             SELECT 1
             FROM maintenance_schedules m
             WHERE s.shuttle_id = m.shuttle_id
-              AND m.maintenanceDate = TRUNC(SYSDATE)
+              AND m.maintenance_date = TRUNC(SYSDATE)
         )
           AND shuttle_id != v_current_shuttle_id
         FETCH FIRST ROW ONLY;
@@ -520,7 +520,7 @@ END;
 CREATE OR REPLACE PROCEDURE ASSIGN_BACKUP_DRIVERS AS
     -- Cursor to fetch shifts without assigned drivers
     CURSOR unassigned_shifts IS
-        SELECT shift_id, shuttle_id, startTime, endTime
+        SELECT shift_id, shuttle_id, start_time, end_time
         FROM shifts
         WHERE driver_id IS NULL; -- Select shifts without an assigned primary driver
 
@@ -543,7 +543,7 @@ BEGIN
                 SELECT 1
                 FROM shifts s
                 WHERE s.driver_id = d.driver_id
-                AND (s.startTime <= shift_record.endTime AND s.endTime >= shift_record.startTime)
+                AND (s.start_time <= shift_record.end_time AND s.end_time >= shift_record.start_time)
             )
             AND ROWNUM = 1; -- Fetch the first available driver
 
@@ -593,7 +593,7 @@ BEGIN
     SELECT COUNT(*) INTO v_maintenance_exists
     FROM maintenance_schedules
     WHERE shuttle_id = p_shuttle_id
-      AND maintenanceDate >= SYSDATE;
+      AND maintenance_date >= SYSDATE;
 
     IF v_maintenance_exists > 0 THEN
         RAISE_APPLICATION_ERROR(-20002, 'Shuttle is already scheduled for maintenance.');
@@ -602,7 +602,7 @@ BEGIN
     -- Schedule the shuttle for maintenance
     v_maintenance_date := SYSDATE + INTERVAL '2' DAY;
 
-    INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenanceDate, description)
+    INSERT INTO maintenance_schedules (maintenance_id, shuttle_id, maintenance_date, description)
     VALUES (
         'MNT_' || p_shuttle_id || '_' || TO_CHAR(SYSDATE, 'YYYYMMDD'),
         p_shuttle_id,
