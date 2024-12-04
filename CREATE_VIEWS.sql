@@ -23,7 +23,7 @@ GROUP BY
 CREATE OR REPLACE VIEW weekly_driver_schedule AS
 SELECT 
     d.driver_id,
-    d.licence_number,
+    d.license_number,
     s.shift_id,
     s.shuttle_id,
     sh.model AS shuttle_model,
@@ -93,7 +93,7 @@ ORDER BY
 CREATE OR REPLACE VIEW top_drivers_by_rides_driven AS
 SELECT 
     d.driver_id,
-    d.licence_number,
+    d.license_number,
     COUNT(r.ride_id) AS rides_driven
 FROM 
     drivers d
@@ -104,7 +104,7 @@ JOIN
 JOIN 
     rides r ON t.trip_id = r.trip_id
 GROUP BY 
-    d.driver_id, d.licence_number
+    d.driver_id, d.license_number
 ORDER BY 
     rides_driven DESC;
 
@@ -173,7 +173,7 @@ ORDER BY
 CREATE OR REPLACE VIEW Driver_Shift_Assignment_View AS
 SELECT 
     d.driver_id,
-    d.licence_number,
+    d.license_number,
     s.shift_id,
     s.start_time AS shift_start_time,
     s.end_time AS shift_end_time,
@@ -195,7 +195,7 @@ SELECT
     sh.shuttle_id,
     sh.model AS shuttle_model,
     sh.capacity AS shuttle_capacity,
-    sh.licensePlate,
+    sh.license_Plate,
     ms.maintenance_id,
     ms.maintenance_date,
     ms.description AS maintenance_description,
