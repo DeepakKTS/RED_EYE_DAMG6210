@@ -4,16 +4,19 @@ number of maintenance schedules conducted for shuttles on a monthly basis*/
 
 CREATE OR REPLACE VIEW MaintenancePerMonth AS
 SELECT
-    TO_CHAR(maintenanceDate, 'YYYY-MM') AS maintenance_month,
-    shuttle_id,
-    COUNT(*) AS maintenance_count
+    TO_CHAR(maintenance_Date, 'YYYY-MM') AS maintenance_month,
+    shuttle_id,
+    COUNT(*) AS maintenance_count
 FROM
-    maintenance_schedules
+    maintenance_schedules
+WHERE
+    maintenance_Date IS NOT NULL
 GROUP BY
-    TO_CHAR(maintenanceDate, 'YYYY-MM'),
-    shuttle_id
+    TO_CHAR(maintenance_Date, 'YYYY-MM'),
+    shuttle_id
 ORDER BY
-    maintenance_month, shuttle_id;
+    TO_CHAR(maintenance_Date, 'YYYY-MM'),
+    shuttle_id;
 
 /*The Shuttle Efficiency and Mileage Trends Report provides a comprehensive analysis of shuttle usage by summarizing daily mileage trends, cumulative total mileage, and the total number of trips completed for each shuttle. This report helps identify utilization patterns, peak usage times, and potential underutilization of shuttle assets.*/
 CREATE OR REPLACE VIEW shuttle_efficiency_and_mileage_trends AS
@@ -91,19 +94,19 @@ ORDER BY
     total_trips_taken DESC, total_hours_worked DESC;
 
  /*Report - Average Cancels per day*/
- CREATE OR REPLACE VIEW AverageCancelsPerDay AS
+CREATE OR REPLACE VIEW AverageCancelsPerDay AS
 SELECT
-    TRUNC(t.startTime) AS trip_date,                         -- Extract the date from the startTime
+    TRUNC(t.start_time) AS trip_date,                         -- Extract the date from the start_time
     COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) AS cancels_per_day, -- Count canceled trips for the day
     ROUND(
         COUNT(CASE WHEN t.status = 'Cancelled' THEN 1 END) * 1.0 / 
-        COUNT(DISTINCT TRUNC(t.startTime)), 2
+        COUNT(DISTINCT TRUNC(t.start_time)), 2
     ) AS average_cancels,                                   -- Calculate the average cancels per day
     LISTAGG(t.trip_id, ', ') WITHIN GROUP (ORDER BY t.trip_id) AS trip_ids, -- Aggregate trip IDs
     LISTAGG(t.shuttle_id, ', ') WITHIN GROUP (ORDER BY t.shuttle_id) AS shuttle_ids -- Aggregate shuttle IDs
 FROM
     trips t
 GROUP BY
-    TRUNC(t.startTime)
+    TRUNC(t.start_time)
 ORDER BY
     trip_date;
