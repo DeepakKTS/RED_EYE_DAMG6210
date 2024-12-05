@@ -58,9 +58,9 @@ ORDER BY
 /*The Most Frequent Routes Report identifies popular routes by analyzing the frequency of trips between pickup and drop-off locations. It provides insights to optimize route planning and improve shuttle availability based on demand.*/
 CREATE OR REPLACE VIEW most_frequent_routes_report AS
 SELECT 
-    r.pickupLocationId AS pickup_location_id,
+    r.Pickup_Location_id AS pickup_location_id,
     l1.name AS pickup_location_name,
-    r.dropoffLocationId AS dropoff_location_id,
+    r.Dropoff_Location_id AS dropoff_location_id,
     l2.name AS dropoff_location_name,
     COUNT(*) AS trip_count
 FROM 
@@ -73,6 +73,7 @@ GROUP BY
     r.pickup_Location_Id, l1.name, r.dropoff_Location_Id, l2.name
 ORDER BY 
     trip_count DESC;
+    
 ---The TOPDRIVERS view ranks drivers based on performance metrics, aggregating data to show total hours worked and trips completed.
 CREATE OR REPLACE VIEW TOPDRIVERS AS
 SELECT
