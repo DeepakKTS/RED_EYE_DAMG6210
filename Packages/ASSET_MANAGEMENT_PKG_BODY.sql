@@ -231,7 +231,8 @@ create or replace PACKAGE BODY asset_management_pkg IS
          RETURN;
       END IF;
 
-      v_location_id := 'LOC_' || TO_CHAR(SYSTIMESTAMP, 'YYYYMMDDHH24MISS');
+      -- create an id by add _ between the words in the name and adding the current date 
+      v_location_id := 'LOC_' || REPLACE(p_name, ' ', '_') || '_' || TO_CHAR(SYSDATE, 'YYYYMMDDHH24MI');
 
       INSERT INTO locations (location_id, name, address)
       VALUES (v_location_id, p_name, p_address);
@@ -421,3 +422,4 @@ create or replace PACKAGE BODY asset_management_pkg IS
 END;
 
 END asset_management_pkg;
+/
