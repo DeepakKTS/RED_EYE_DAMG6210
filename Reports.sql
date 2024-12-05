@@ -74,6 +74,7 @@ GROUP BY
 ORDER BY 
     trip_count DESC;
     
+    
 ---The TOPDRIVERS view ranks drivers based on performance metrics, aggregating data to show total hours worked and trips completed.
 CREATE OR REPLACE VIEW TOPDRIVERS AS
 SELECT
