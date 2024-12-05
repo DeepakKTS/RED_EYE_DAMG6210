@@ -19,17 +19,26 @@ ORDER BY
     shuttle_id;
 
 /*The Shuttle Efficiency and Mileage Trends Report provides a comprehensive analysis of shuttle usage by summarizing daily mileage trends, cumulative total mileage, and the total number of trips completed for each shuttle. This report helps identify utilization patterns, peak usage times, and potential underutilization of shuttle assets.*/
+
 CREATE OR REPLACE VIEW shuttle_efficiency_and_mileage_trends AS
 WITH daily_mileage AS (
     SELECT 
         shuttle_id,
         TRUNC(updated_at) AS mileage_date,
-        SUM(mileage_added) AS daily_mileage_added,
-        MAX(total_mileage) AS total_mileage
+        SUM(mileage_added) AS daily_mileage_added
     FROM 
         shuttle_mileage_records
     GROUP BY 
         shuttle_id, TRUNC(updated_at)
+),
+total_mileage AS (
+    SELECT 
+        shuttle_id,
+        SUM(mileage_added) AS total_mileage
+    FROM 
+        shuttle_mileage_records
+    GROUP BY 
+        shuttle_id
 ),
 trip_count AS (
     SELECT 
@@ -44,16 +53,21 @@ SELECT
     dm.shuttle_id,
     dm.mileage_date,
     dm.daily_mileage_added,
-    dm.total_mileage,
+    tm.total_mileage,
     tc.trip_count
 FROM 
     daily_mileage dm
+LEFT JOIN 
+    total_mileage tm
+ON 
+    dm.shuttle_id = tm.shuttle_id
 LEFT JOIN 
     trip_count tc
 ON 
     dm.shuttle_id = tc.shuttle_id
 ORDER BY 
     dm.shuttle_id, dm.mileage_date;
+
 
 /*The Most Frequent Routes Report identifies popular routes by analyzing the frequency of trips between pickup and drop-off locations. It provides insights to optimize route planning and improve shuttle availability based on demand.*/
 CREATE OR REPLACE VIEW most_frequent_routes_report AS
