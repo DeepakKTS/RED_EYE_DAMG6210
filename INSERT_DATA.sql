@@ -20,3 +20,7 @@ INSERT INTO third_party_services VALUES ('TPS3', 'Green Rides', 'support@greenri
 INSERT INTO third_party_services VALUES ('TPS4', 'Urban Transit', 'hello@urbantransit.com');
 INSERT INTO third_party_services VALUES ('TPS5', 'Eco Transport', 'contact@ecotransport.com');
 COMMIT;
+
+-- Location
+INSERT INTO locations VALUES ('L1', 'Main Campus', '123 Main St', 1);
+COMMIT;

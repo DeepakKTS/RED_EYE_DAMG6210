@@ -108,7 +108,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       SELECT COUNT(ride_id) INTO v_rider_count FROM rides WHERE trip_id = p_trip_id AND status = C_STATUS_BOOKED;
       SELECT start_time INTO v_start_time FROM trips where trip_id = p_trip_id;
       
-      v_end_time := v_start_time + INTERVAL '2' MINUTE * v_rider_count;
+      -- TODO: Revert to 2 minutes per rider
+      v_end_time := SYSTIMESTAMP + INTERVAL '1' MINUTE ;
       
       UPDATE trips SET status = C_STATUS_IN_PROGRESS, end_time = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
       UPDATE rides 
@@ -151,7 +152,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    BEGIN
       -- Check if user exists
       IF NOT does_user_exist(p_email) THEN
-         RAISE_APPLICATION_ERROR(-20001, 'User with email ' || p_email || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('User with email ' || p_email || ' does not exist.');
+         RETURN;
       END IF;
 
       -- Get user ID
@@ -159,7 +161,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
 
       -- Check if dropoff location exists
       IF NOT does_location_exist(p_dropoff_location_name) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Location ' || p_dropoff_location_name || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('Location ' || p_dropoff_location_name || ' does not exist.');   
       END IF;
 
       -- Get location ID
@@ -174,8 +176,9 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       update_trip_status();
 
       -- Check if booking is allowed at current time
-      IF v_current_hour NOT BETWEEN 6 AND 18 THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Booking is only allowed between 6 AM and 6 PM.');
+      IF v_current_hour NOT BETWEEN 6 AND 22 THEN
+         DBMS_OUTPUT.PUT_LINE('Cannot book a ride at this time. Booking hours are between 6 AM and 10 PM EST.');
+         RETURN;
       END IF;
 
       -- Check if user already has an active ride
@@ -186,7 +189,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       AND status IN (C_STATUS_BOOKED, C_STATUS_IN_PROGRESS);
 
       IF v_current_ride_id > 0 THEN
-         RAISE_APPLICATION_ERROR(-20003, 'User ' || v_user_id || ' already has an active ride.');
+         DBMS_OUTPUT.PUT_LINE('User already has an active ride. Cannot book another ride.');
+         RETURN;
       END IF;
 
       -- Find available trip
@@ -227,7 +231,8 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
                AND ROWNUM = 1;
          EXCEPTION
                WHEN NO_DATA_FOUND THEN
-                  RAISE_APPLICATION_ERROR(-20004, 'No shuttles available. Unable to start a new trip.');
+                  DBMS_OUTPUT.PUT_LINE('No available shuttles found. Cannot book a ride.');
+                  RETURN;
          END;
 
          -- Check if trip has been available for more than 3 minutes
@@ -261,7 +266,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    EXCEPTION
       WHEN OTHERS THEN
          ROLLBACK;
-         RAISE;
+         DBMS_OUTPUT.PUT_LINE('An error occurred while booking ride. Please try again.');
    END book_ride;
       
 
@@ -275,7 +280,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    BEGIN
 
       IF NOT does_user_exist(p_email) THEN
-         RAISE_APPLICATION_ERROR(-20001, 'User with email ' || p_email || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('User with email ' || p_email || ' does not exist.');
          RETURN;
       ELSE
          SELECT user_id INTO v_user_id FROM users WHERE email = p_email;
@@ -289,7 +294,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       EXCEPTION
          WHEN NO_DATA_FOUND THEN
             v_booked_rides := 0;
-            RAISE_APPLICATION_ERROR(-20002, 'No booked rides found for user ' || v_user_id);
+            DBMS_OUTPUT.PUT_LINE('No booked rides found for user ' || v_user_id);
             RETURN;
       END;
 
@@ -304,7 +309,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       END;
 
       IF v_in_progress_rides > 0 THEN
-         RAISE_APPLICATION_ERROR(-20003, 'Cannot cancel ride. Ride is already in progress.');
+         DBMS_OUTPUT.PUT_LINE('Cannot cancel ride. Ride is already in progress.');
          RETURN;
       END IF;
 
@@ -314,7 +319,7 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    EXCEPTION
       WHEN OTHERS THEN
          ROLLBACK;
-         RAISE;
+         DBMS_OUTPUT.PUT_LINE('An error occurred while cancelling ride. Please try again.');
    END cancel_ride;
    
 END ride_management_pkg;
