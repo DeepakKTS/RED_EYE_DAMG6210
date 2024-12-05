@@ -9,10 +9,8 @@ create or replace package ride_management_pkg is
    -- Procedure to handle ride cancellations
    procedure cancel_ride (
       p_email in varchar2
-   );
-
-   PROCEDURE log_ride;
-
+   ); 
+   
    PROCEDURE update_trip_status;
 
 end ride_management_pkg;
