@@ -1,4 +1,4 @@
-# RED_EYE_DAMG6210
+# RED EYE DAMG6210
 
 ## Overview
 
@@ -60,6 +60,16 @@ The script grants the following privileges to the `REDEYE` user:
 2. **Login using the created user to run the rest of the scripts.**
 3. **Run the `CREATE_TABLES.sql` script** to create the necessary tables.
 4. **Run the `INSERT_DATA.sql` script** to populate the tables with initial data.
-5. **Run the CREATE_VIEWS.sql script** to create and update the views.
+5. **Run the `CREATE_VIEWS.sql` script** to create and update the views.
+
+## Additional Features
+
+We now have multiple packages that help us to implement business rules and maintain data integrity. 
+
+We have different types of users such as manager, analyst, driver, and app_users, each with permissions accordingly.
+
+We also need to execute packages, triggers, and a scheduler to start everything.
+
+A scheduler has been added that updates `ride_status` every 10 seconds.
 
 By following these steps, you will set up the Redeye system's database and be ready to manage shuttle bookings efficiently.
