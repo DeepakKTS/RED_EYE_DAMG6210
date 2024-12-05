@@ -2,7 +2,7 @@
 
 CREATE OR REPLACE VIEW completely_or_partially_booked_shuttles AS
 SELECT
-    s.shuttle_id,
+    s.license_plate,
     s.model,
     s.capacity,
     COALESCE(SUM(r.status = 'booked'), 0) AS booked_count,
@@ -18,16 +18,16 @@ LEFT JOIN
 LEFT JOIN
     rides r ON t.trip_id = r.trip_id
 GROUP BY
-    s.shuttle_id, s.model, s.capacity;
+    s.LICENSE_PLATE, s.model, s.capacity;
  
 --select* from completely_or_partially_booked_shuttles;
  
 CREATE OR REPLACE VIEW weekly_driver_schedule AS
 SELECT
-    d.driver_id,
+    u.name AS driver_name,
     d.license_number,
     s.shift_id,
-    s.shuttle_id,
+    sh.license_plate,
     sh.model AS shuttle_model,
     sh.capacity AS shuttle_capacity,
     s.start_time,
@@ -40,6 +40,8 @@ JOIN
     shifts s ON d.driver_id = s.driver_id
 JOIN
     shuttles sh ON s.shuttle_id = sh.shuttle_id
+JOIN
+    users u ON d.driver_id = u.user_id
 ORDER BY
     d.driver_id,
     year,
@@ -53,14 +55,12 @@ from MAINTENANCE_SCHEDULES sm
 join shuttles s on s.SHUTTLE_ID = sm.SHUTTLE_ID
 where sm.MAINTENANCE_DATE > SYSDATE
 ORDER BY
-    sm.MAINTENANCE_DATE ASC;
+sm.MAINTENANCE_DATE ASC;
  
  
 CREATE OR REPLACE VIEW most_booked_routes AS
 SELECT
-    l1.location_id AS pickup_location_id,
     l1.name AS pickup_location_name,
-    l2.location_id AS dropoff_location_id,
     l2.name AS dropoff_location_name,
     COUNT(r.ride_id) AS booking_count
 FROM
@@ -72,15 +72,14 @@ JOIN
 GROUP BY
     l1.location_id, l1.name, l2.location_id, l2.name
 ORDER BY
-    booking_count DESC;
+    booking_count DESC
+FETCH FIRST 5 ROWS ONLY;
    
    
 CREATE OR REPLACE VIEW top_users_by_rides_taken AS
 SELECT
-    u.user_id,
     u.name AS user_name,
     u.email,
-    u.phone,
     COUNT(r.ride_id) AS rides_taken
 FROM
     users u
@@ -89,12 +88,13 @@ JOIN
 GROUP BY
     u.user_id, u.name, u.email, u.phone
 ORDER BY
-    rides_taken DESC;
+    rides_taken DESC
+FETCH FIRST 5 ROWS ONLY;
  
  
 CREATE OR REPLACE VIEW top_drivers_by_rides_driven AS
 SELECT
-    d.driver_id,
+    u.name as driver_name,
     d.license_number,
     COUNT(r.ride_id) AS rides_driven
 FROM
@@ -105,10 +105,13 @@ JOIN
     trips t ON s.shuttle_id = t.shuttle_id  -- Assuming that shifts are associated with shuttles used in trips
 JOIN
     rides r ON t.trip_id = r.trip_id
+JOIN
+    users u ON d.driver_id = u.user_id
 GROUP BY
-    d.driver_id, d.license_number
+    d.license_number, u.name
 ORDER BY
-    rides_driven DESC;
+    rides_driven DESC
+FETCH FIRST 5 ROWS ONLY;
  
  
 CREATE OR REPLACE VIEW peak_time_for_riding AS
@@ -200,25 +203,24 @@ SELECT
     sh.license_Plate,
     ms.maintenance_id,
     ms.maintenance_date,
-    ms.description AS maintenance_description,
+    NVL(ms.description, ' ') AS maintenance_description,
     CASE
         WHEN ms.maintenance_date > SYSDATE THEN 'Scheduled'
         WHEN ms.maintenance_date <= SYSDATE THEN 'Completed'
-        ELSE 'Unknown'
+        ELSE 'Not Scheduled'
     END AS maintenance_status
 FROM
     shuttles sh
 LEFT JOIN
     maintenance_schedules ms ON sh.shuttle_id = ms.shuttle_id
+WHERE ms.maintenance_id IS NOT NULL
 ORDER BY
     sh.shuttle_id, ms.maintenance_date DESC;
    
    
 CREATE OR REPLACE VIEW Route_Utilization_View AS
 SELECT
-    l1.location_id AS pickup_location_id,
     l1.name AS pickup_location_name,
-    l2.location_id AS dropoff_location_id,
     l2.name AS dropoff_location_name,
     COUNT(r.ride_id) AS utilization_count
 FROM
@@ -231,41 +233,16 @@ GROUP BY
     l1.location_id, l1.name, l2.location_id, l2.name
 ORDER BY
     utilization_count DESC;
-   
-CREATE OR REPLACE VIEW Ride_Notifications_View AS
-SELECT
-    r.ride_id,
-    r.user_id,
-    u.name AS user_name,
-    u.email AS user_email,
-    t.trip_id,
-    t.start_time AS trip_start_time,
-    t.end_time AS trip_end_time,
-    CASE
-        WHEN t.start_time BETWEEN SYSDATE AND (SYSDATE + INTERVAL '1' DAY) THEN 'Upcoming within 24 hours'
-        WHEN t.start_time > SYSDATE THEN 'Scheduled'
-        ELSE 'Past Ride'
-    END AS notification_status
-FROM
-    rides r
-JOIN
-    trips t ON r.trip_id = t.trip_id
-JOIN
-    users u ON r.user_id = u.user_id
-WHERE
-    t.start_time IS NOT NULL
-ORDER BY
-    t.start_time ASC;
-     
-   
+
+
 CREATE OR REPLACE VIEW Shift_Logs_View AS
 SELECT
     s.shift_id,
     s.start_time AS shift_start_time,
     s.end_time AS shift_end_time,
-    d.driver_id,
+    u.name AS driver_name,
     d.license_number AS driver_license,
-    sh.shuttle_id,
+    sh.license_plate AS shuttle_license_plate,
     sh.model AS shuttle_model,
     sh.capacity AS shuttle_capacity,
     CASE
@@ -280,12 +257,11 @@ JOIN
     drivers d ON s.driver_id = d.driver_id
 JOIN
     shuttles sh ON s.shuttle_id = sh.shuttle_id
+JOIN
+    users u ON d.driver_id = u.user_id
 ORDER BY
     s.start_time DESC;
- 
- 
- 
- 
+    
 /*FOR MANAGER
 VIEW: SHUTTLE_DUE_FOR_MAINTENANCE*/
 CREATE OR REPLACE VIEW shuttles_due_for_maintenance AS
