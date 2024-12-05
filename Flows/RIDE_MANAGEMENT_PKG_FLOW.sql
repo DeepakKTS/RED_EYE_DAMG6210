@@ -1,6 +1,6 @@
 BEGIN
   -- Test booking a ride
-  RIDE_MANAGEMENT_PKG.book_ride(
+  redeye_user_management_pkg.book_ride(
     'piyush@redeye.com',
     'Main Office'
   );

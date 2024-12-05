@@ -4,15 +4,16 @@
 
 
 SET SERVEROUTPUT ON;
+
 BEGIN
   DBMS_SCHEDULER.CREATE_JOB (
     job_name        => 'UPDATE_TRIP_STATUS_JOB',
     job_type        => 'STORED_PROCEDURE',
-    job_action      => 'ride_management_pkg.test_procedure',
+    job_action      => 'ride_management_pkg.update_trip_status', 
     start_date      => SYSTIMESTAMP,
-    repeat_interval => 'FREQ=SECONDLY;INTERVAL=1',
+    repeat_interval => 'FREQ=SECONDLY;INTERVAL=10',
     enabled         => TRUE,
-    comments        => 'Job to update trip and ride statuses every 5 minutes'
+    comments        => 'Job to update trip and ride statuses every 10 seconds'
   );
 END;
 /

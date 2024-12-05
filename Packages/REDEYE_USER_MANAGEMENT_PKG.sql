@@ -26,7 +26,7 @@ CREATE OR REPLACE PACKAGE BODY redeye_user_management_pkg IS
       p_phone IN users.phone%TYPE DEFAULT NULL
    ) IS
    BEGIN
-      assets_management_pkg.update_user(p_name, p_email, p_phone);
+      asset_management_pkg.update_user(p_name, p_email, p_phone);
    END update_user;
 
    PROCEDURE book_ride (
