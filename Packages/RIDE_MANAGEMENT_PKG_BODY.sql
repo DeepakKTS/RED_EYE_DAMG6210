@@ -108,7 +108,6 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
       SELECT COUNT(ride_id) INTO v_rider_count FROM rides WHERE trip_id = p_trip_id AND status = C_STATUS_BOOKED;
       SELECT start_time INTO v_start_time FROM trips where trip_id = p_trip_id;
       
-      -- TODO: Revert to 2 minutes per rider
       v_end_time := SYSTIMESTAMP + INTERVAL '1' MINUTE ;
       
       UPDATE trips SET status = C_STATUS_IN_PROGRESS, end_time = SYSTIMESTAMP + INTERVAL '2' MINUTE * v_rider_count WHERE trip_id = p_trip_id;
@@ -324,3 +323,5 @@ CREATE OR REPLACE PACKAGE BODY ride_management_pkg IS
    
 END ride_management_pkg;
 /
+
+-- SELECT * FROM logger;

@@ -11,5 +11,9 @@ create or replace package ride_management_pkg is
       p_email in varchar2
    );
 
+   PROCEDURE log_ride;
+
+   PROCEDURE update_trip_status;
+
 end ride_management_pkg;
 /
