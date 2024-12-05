@@ -359,3 +359,78 @@ FROM
     LOCATIONS l
 WHERE 
     l.is_active = 1 AND LOCATION_ID  != 'L1'
+    
+    
+/*VIEWS FOR MANAGER*/
+
+-- View for users Table
+CREATE OR REPLACE VIEW view_users AS
+SELECT 
+    name,
+    email,
+    phone,
+    is_active
+FROM users;
+
+-- View for shuttles Table
+CREATE OR REPLACE VIEW view_shuttles AS
+SELECT 
+    model,
+    capacity,
+    license_plate,
+    is_active
+FROM shuttles;
+
+
+-- View for drivers Table
+CREATE OR REPLACE VIEW view_driver AS
+SELECT 
+   
+    u.name AS user_name,
+    u.email AS user_email,
+    u.phone AS user_phone,
+     d.verification_flag,
+    d.license_number,
+    CASE 
+        WHEN d.is_active = 1 THEN 'active'
+        ELSE 'inactive'
+    END AS is_active,
+    tps.service_name AS tps_name
+FROM 
+    drivers d
+INNER JOIN 
+    users u
+ON 
+    d.driver_id = u.user_id
+LEFT JOIN 
+    third_party_services tps
+ON 
+    d.tp_id = tps.tp_id;
+
+
+
+
+-- View for shifts Table
+CREATE OR REPLACE VIEW view_shifts AS
+SELECT 
+     shift_id,
+    start_time,
+    end_time
+FROM shifts;
+
+-- View for rides Table
+CREATE OR REPLACE VIEW view_rides AS
+SELECT 
+    pickup_location_id,
+    dropoff_location_id,
+    status
+FROM rides;
+
+-- View for trips Table
+CREATE OR REPLACE VIEW view_trips AS
+SELECT 
+    start_time,
+    end_time,
+    status
+FROM trips;
+
