@@ -1,0 +1,985 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"  width="1248" height="844">
+<defs id="dmw_defs" >
+<svg id="fk_sym" viewBox="0 0 48.665 48.665" style="enable-background:new 0 0 48.665 48.665;" >
+<g>
+<path d="M40.332,31.592c-2.377,0-4.515,1-6.033,2.598l-17.737-8.686c0.061-0.406,0.103-0.82,0.103-1.246    c0-0.414-0.04-0.818-0.098-1.215l17.711-8.589c1.519,1.609,3.666,2.619,6.054,2.619c4.603,0,8.333-3.731,8.333-8.333    c0-4.603-3.73-8.333-8.333-8.333s-8.333,3.73-8.333,8.333c0,0.414,0.04,0.817,0.098,1.215l-17.709,8.589    c-1.519-1.609-3.666-2.619-6.054-2.619C3.73,15.925,0,19.656,0,24.258c0,4.603,3.73,8.333,8.333,8.333    c2.377,0,4.515-1,6.033-2.596l17.736,8.685c-0.062,0.406-0.104,0.82-0.104,1.245c0,4.604,3.73,8.333,8.333,8.333    s8.333-3.729,8.333-8.333C48.665,35.322,44.935,31.592,40.332,31.592z" fill="#13bf3b"/>
+</g>
+</svg>
+<svg id="pk_sym" viewBox="0 0 480.509 480.509" style="enable-background:new 0 0 480.509 480.509;" >
+<g>
+<path d="M418.119,331.046c4.094,4.374,7.766,8.186,10.996,11.416c3.237,3.238,6.714,6.376,10.427,9.422   c3.71,3.042,6.427,4.568,8.135,4.568c3.241,0,9.517-4.661,18.843-13.99c9.328-9.321,13.989-15.604,13.989-18.842   c0-1.523-2.714-5.421-8.138-11.704c-5.421-6.276-12.364-13.702-20.838-22.271c-8.473-8.565-16.703-16.744-24.694-24.55   c-8.001-7.81-15.8-15.373-23.417-22.703c-7.611-7.327-11.992-11.56-13.135-12.703c-1.902-1.902-4.093-2.853-6.563-2.853   c-3.237,0-9.521,4.661-18.843,13.988c-9.328,9.322-13.989,15.605-13.989,18.843c0,1.711,1.522,4.421,4.568,8.138   c3.046,3.71,6.188,7.187,9.421,10.424c3.23,3.23,7.047,6.899,11.42,10.992c4.377,4.093,6.848,6.423,7.423,6.995l-27.408,27.404   L254.954,222.268c24.94-33.498,37.408-68.236,37.408-104.211c0-31.024-9.761-56.293-29.263-75.801   c-19.512-19.511-44.778-29.265-75.805-29.265c-30.454,0-60.244,9.042-89.363,27.119c-29.121,18.083-52.727,41.686-70.808,70.808   C9.042,140.038,0,169.828,0,200.28c0,31.029,9.753,56.286,29.265,75.803c19.511,19.517,44.777,29.27,75.801,29.27   c35.976,0,70.71-12.467,104.212-37.407l191.574,191.579c5.332,5.328,11.796,7.994,19.417,7.994c7.991,0,15.704-3.72,23.12-11.14   c7.426-7.426,11.143-15.129,11.143-23.127c0-7.617-2.666-14.092-7.994-19.417l-62.811-62.811l27.405-27.404   C411.699,324.195,414.033,326.666,418.119,331.046z M221.556,161.458c-10.656,10.657-23.601,15.987-38.828,15.987   c-7.996,0-15.896-1.812-23.7-5.43c3.617,7.808,5.426,15.706,5.426,23.7c0,15.229-5.327,28.171-15.987,38.828   c-10.66,10.655-23.606,15.986-38.831,15.986c-15.227,0-28.168-5.325-38.828-15.986c-10.657-10.657-15.987-23.599-15.987-38.828   c0-15.227,5.327-28.171,15.987-38.828C81.464,146.23,94.409,140.9,109.636,140.9c7.992,0,15.893,1.809,23.695,5.424   c-3.616-7.804-5.424-15.706-5.424-23.699c0-15.227,5.327-28.171,15.987-38.828c10.66-10.657,23.604-15.987,38.831-15.987   c15.227,0,28.171,5.327,38.828,15.987c10.657,10.66,15.987,23.601,15.987,38.828C237.539,137.852,232.209,150.797,221.556,161.458z   " fill="#ff8345"/>
+</g>
+</svg>
+<svg id="uk_sym" viewBox="0 0 490 490" style="enable-background:new 0 0 490 490;" >
+<g>
+	<polygon points="236.99,11.41 0,246.348 236.99,478.678 236.99,350.609 129.864,245 236.99,139.391  " fill="#0064fb"/>
+<polygon points="253.01,478.59 490,243.651 253.01,11.322 253.01,139.391 360.136,245 253.01,350.609  " fill="#0064fb"/>
+</g>
+</svg>
+<svg id="link_sym" viewBox="0 0 1000 900" style="enable-background:new 0 0 1000 900;" >
+<g>
+<path fill="black" d="M660.224 422.656c6.976 16.192-0.512 35.008-16.768 42.048-16.128 6.976-34.944-0.448-41.984-16.768-8.448-19.776-20.736-37.696-36.224-53.248-64.64-64.64-177.344-64.64-241.92 0l-145.216 145.28c-66.688 66.688-66.688 175.232 0 241.984 66.688 66.688 175.104 66.752 241.92 0l92.8-92.864c12.48-12.48 32.768-12.48 45.248 0s12.48 32.768 0 45.248l-92.8 92.864c-91.648 91.648-240.832 91.52-332.416 0-91.712-91.648-91.712-240.832 0-332.48l145.216-145.28c44.352-44.416 103.424-68.864 166.272-68.864s121.792 24.448 166.208 68.864c21.248 21.312 38.016 45.952 49.664 73.216zM891.136 401.344l-145.216 145.216c-88.768 88.832-243.712 88.832-332.416 0-21.312-21.312-38.080-45.952-49.728-73.216-7.040-16.256 0.448-35.072 16.704-42.048 16.064-6.784 35.008 0.512 41.984 16.768 8.512 19.776 20.8 37.696 36.288 53.248 64.64 64.64 177.344 64.64 241.92 0l145.216-145.216c66.688-66.688 66.688-175.232 0-241.984-66.752-66.624-175.168-66.688-241.92 0l-92.8 92.864c-12.48 12.48-32.768 12.48-45.248 0s-12.48-32.768 0-45.248l92.8-92.864c45.824-45.824 105.984-68.736 166.208-68.736s120.448 22.912 166.272 68.736c91.584 91.648 91.584 240.768-0.064 332.48z" />
+</g>
+</svg>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath6_0_">
+<rect x="0" y="0" width="166" height="70" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath8_0_">
+<rect x="0" y="0" width="272" height="141" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath12_0_">
+<rect x="0" y="0" width="192" height="115" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath11_0_">
+<rect x="0" y="0" width="183" height="128" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath7_0_">
+<rect x="0" y="0" width="181" height="141" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath13_0_">
+<rect x="0" y="0" width="181" height="122" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath9_0_">
+<rect x="0" y="0" width="197" height="122" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath4_0_">
+<rect x="0" y="0" width="230" height="102" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath1_0_">
+<rect x="0" y="0" width="220" height="180" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath5_0_">
+<rect x="0" y="0" width="239" height="180" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath2_0_">
+<rect x="0" y="0" width="192" height="109" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath10_0_">
+<rect x="0" y="0" width="207" height="83" />
+</clipPath>
+<clipPath clipPathUnits="userSpaceOnUse" id="clipPath3_0_">
+<rect x="0" y="0" width="269" height="128" />
+</clipPath>
+</defs>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M249 349 L249 509" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="249 349 252 355 246 355" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M243.0 509.0 L249.0 497.0 L255.0 509.0 M245.0 494.0 L253.0 488.0 M245.0 488.0 L253.0 494.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M602 613 L602 796 L219 796" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="602 613 605 619 599 619" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M219.0 790.0 L231.0 796.0 L219.0 802.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+<circle  cx="240.0" cy="796.0" r="5.4" fill="none" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M723 761 L723 613" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="723 761 720 755 726 755" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d="M729.0 613.0 L723.0 625.0 L717.0 613.0 M729.0 625.5999994277954 L717.0 625.5999994277954" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1027 72 L742 72" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1027 72 1021 75 1021 69" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M742.0 66.0 L754.0 72.0 L742.0 78.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+<circle  cx="763.0" cy="72.0" r="5.4" fill="none" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M156 349 L156 696" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="156 349 159 355 153 355" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M150.0 696.0 L156.0 684.0 L162.0 696.0 M152.0 681.0 L160.0 675.0 M152.0 675.0 L160.0 681.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M466 262 L466 134 L342 134" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="466 262 463 256 469 256" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d="M342.0 128.0 L354.0 134.0 L342.0 140.0 M354.5999994277954 128.0 L354.5999994277954 140.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1033 179 L742 179" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1033 179 1027 182 1027 176" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M742.0 173.0 L754.0 179.0 L742.0 185.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+<circle  cx="763.0" cy="179.0" r="5.4" fill="none" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M560 262 L560 200" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="560 262 557 256 563 256" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M566.0 200.0 L560.0 212.0 L554.0 200.0 M564.0 215.0 L556.0 221.0 M564.0 221.0 L556.0 215.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1156 595 L1156 513" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1156 595 1153 589 1159 589" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M1162.0 513.0 L1156.0 525.0 L1150.0 513.0 M1160.0 528.0 L1152.0 534.0 M1160.0 534.0 L1152.0 528.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1048 473 L765 473" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1048 473 1042 476 1042 470" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d="M771.0 467.0 L771.0 479.0 M776.3999996185303 467.0 L776.3999996185303 479.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M191 227 L191 157" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="191 227 188 221 194 221" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d="M197.0 157.0 L191.0 169.0 L185.0 157.0 M197.0 169.5999994277954 L185.0 169.5999994277954" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M290 305 L435 305" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="290 305 296 302 296 308" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M435.0 311.0 L423.0 305.0 L435.0 299.0 M420.0 309.0 L414.0 301.0 M414.0 309.0 L420.0 301.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1156 665 L1156 730" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1156 665 1159 671 1153 671" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M1150.0 730.0 L1156.0 718.0 L1162.0 730.0 M1152.0 715.0 L1160.0 709.0 M1152.0 709.0 L1160.0 715.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g stroke-linecap="butt" >
+<path stroke="rgb(0,0,0)" fill="none" stroke-opacity="1.0"  stroke-dasharray="8,8" stroke-width="1" d="M1131 281 L1131 398" />
+<polygon stroke="rgb(0,0,0)" stroke-dasharray="none" points="1131 281 1134 287 1128 287" fill="rgb(0,0,0)" stroke-width="1" stroke-opacity="1.0"  />
+<path stroke-dasharray="none" d=" M1125.0 398.0 L1131.0 386.0 L1137.0 398.0 M1127.0 383.0 L1135.0 377.0 M1127.0 377.0 L1135.0 383.0" fill="white" stroke-width="1" stroke-opacity="1.0" stroke="rgb(0,0,0)" />
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath1_0_)" transform="translate(545,433)" >
+<rect x="0" y="0" width="219" height="179" />
+<text id="CB88CE46-72166D46A7D5" x="91" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+drivers
+</text>
+<line x1="0" y1="17" x2="218" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+driver_id
+</text>
+<text x="125" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+verification_flag
+</text>
+<text x="125" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="56" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+UF
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_role_id
+</text>
+<text x="125" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="69" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+U
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+license_number
+</text>
+<text x="125" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+tp_id
+</text>
+<text x="125" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="95" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="95" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+is_active
+</text>
+<text x="125" y="95" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER (1)
+</text>
+<line x1="0" y1="101" x2="218" y2="101" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="108" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="114" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+drivers_PK (driver_id)
+</text>
+<use xlink:href="#uk_sym" x="4" y="121" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="127" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+INDEX_1 (user_role_id)
+</text>
+<use xlink:href="#uk_sym" x="4" y="134" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="140" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+INDEX_2 (license_number)
+</text>
+<line x1="0" y1="146" x2="218" y2="146" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="153" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#E0496562-A8514EA1A96B" >
+<text x="16" y="159" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+drivers_third_party_services_FK (tp_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="166" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#45F0EF81-DF90D18FF238" >
+<text x="16" y="172" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+drivers_user_roles_FK (user_role_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath2_0_)" transform="translate(1027,16)" >
+<rect x="0" y="0" width="191" height="108" />
+<text id="DE77CA5F-7BC91200436C" x="73" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+locations
+</text>
+<line x1="0" y1="17" x2="190" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+location_id
+</text>
+<text x="99" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+U
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+name
+</text>
+<text x="99" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (100)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+address
+</text>
+<text x="99" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (255)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+is_active
+</text>
+<text x="99" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER (1)
+</text>
+<line x1="0" y1="75" x2="190" y2="75" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="82" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="88" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+locations_PK (location_id)
+</text>
+<use xlink:href="#uk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+INDEX_1v1 (name)
+</text>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath3_0_)" transform="translate(209,509)" >
+<rect x="0" y="0" width="268" height="127" />
+<text id="FFA27FC1-66292671A201" x="72" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+maintenance_schedules
+</text>
+<line x1="0" y1="17" x2="267" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+maintenance_id
+</text>
+<text x="176" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_id
+</text>
+<text x="176" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+last_maintenance_mileage
+</text>
+<text x="176" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+maintenance_date
+</text>
+<text x="176" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+DATE
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+description
+</text>
+<text x="176" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (255)
+</text>
+<line x1="0" y1="88" x2="267" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+maintenance_schedules_PK (maintenance_id)
+</text>
+<line x1="0" y1="107" x2="267" y2="107" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="114" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A6803496-2B9C99BC6056" >
+<text x="16" y="120" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+maintenance_schedules_shuttles_FK (shuttle_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath4_0_)" transform="translate(1018,730)" >
+<rect x="0" y="0" width="229" height="101" />
+<text id="C7960666-94EDC687FC43" x="82" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+permissions
+</text>
+<line x1="0" y1="17" x2="228" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+permission_id
+</text>
+<text x="137" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+role_id
+</text>
+<text x="137" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+permission_details
+</text>
+<text x="137" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (255)
+</text>
+<line x1="0" y1="62" x2="228" y2="62" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="69" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="75" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+permissions_PK (permission_id)
+</text>
+<line x1="0" y1="81" x2="228" y2="81" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="88" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#27E3C375-40A60CE7CCD5" >
+<text x="16" y="94" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+permissions_roles_FK (role_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath5_0_)" transform="translate(503,20)" >
+<rect x="0" y="0" width="238" height="179" />
+<text id="D193F69B-9A56E8C7B128" x="106" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+rides
+</text>
+<line x1="0" y1="17" x2="237" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+ride_id
+</text>
+<text x="140" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+pickup_location_id
+</text>
+<text x="140" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+dropoff_location_id
+</text>
+<text x="140" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+trip_id
+</text>
+<text x="140" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_id
+</text>
+<text x="140" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="95" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="95" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+status
+</text>
+<text x="140" y="95" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<line x1="0" y1="101" x2="237" y2="101" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="108" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="114" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+rides_PK (ride_id)
+</text>
+<line x1="0" y1="120" x2="237" y2="120" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="127" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#DE77CA5F-7BC91200436C" >
+<text x="16" y="133" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+rides_locations_FK (pickup_location_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="140" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#4E4438AD-FFD8641720FD" >
+<text x="16" y="146" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+rides_trips_FK (trip_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="153" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A0EADD6B-9D3125E3BD33" >
+<text x="16" y="159" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+rides_users_FK (user_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath6_0_)" transform="translate(1073,595)" >
+<rect x="0" y="0" width="165" height="69" />
+<text id="27E3C375-40A60CE7CCD5" x="70" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+roles
+</text>
+<line x1="0" y1="17" x2="164" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+role_id
+</text>
+<text x="79" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+name
+</text>
+<text x="79" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<line x1="0" y1="49" x2="164" y2="49" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="56" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="62" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+roles_PK (role_id)
+</text>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath7_0_)" transform="translate(38,696)" >
+<rect x="0" y="0" width="180" height="140" />
+<text id="55FEA3DF-A1C56C23128F" x="75" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+shifts
+</text>
+<line x1="0" y1="17" x2="179" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shift_id
+</text>
+<text x="94" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_id
+</text>
+<text x="94" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+driver_id
+</text>
+<text x="94" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+start_time
+</text>
+<text x="94" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+TIMESTAMP
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+end_time
+</text>
+<text x="94" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+TIMESTAMP
+</text>
+<line x1="0" y1="88" x2="179" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shifts_PK (shift_id)
+</text>
+<line x1="0" y1="107" x2="179" y2="107" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="114" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#CB88CE46-72166D46A7D5" >
+<text x="16" y="120" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shifts_drivers_FK (driver_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="127" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A6803496-2B9C99BC6056" >
+<text x="16" y="133" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shifts_shuttles_FK (shuttle_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath8_0_)" transform="translate(70,16)" >
+<rect x="0" y="0" width="271" height="140" />
+<text id="2A122CF6-CE0CAE10B89C" x="72" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_mileage_records
+</text>
+<line x1="0" y1="17" x2="270" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+record_id
+</text>
+<text x="120" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_id
+</text>
+<text x="120" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+trip_id
+</text>
+<text x="120" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+mileage_added
+</text>
+<text x="120" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+updated_at
+</text>
+<text x="120" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+TIMESTAMP
+</text>
+<line x1="0" y1="88" x2="270" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_mileage_records_PK (record_id)
+</text>
+<line x1="0" y1="107" x2="270" y2="107" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="114" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A6803496-2B9C99BC6056" >
+<text x="16" y="120" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_mileage_records_shuttles_FK (shuttle_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="127" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#4E4438AD-FFD8641720FD" >
+<text x="16" y="133" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_mileage_records_trips_FK (trip_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath9_0_)" transform="translate(93,227)" >
+<rect x="0" y="0" width="196" height="121" />
+<text id="A6803496-2B9C99BC6056" x="77" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+shuttles
+</text>
+<line x1="0" y1="17" x2="195" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_id
+</text>
+<text x="110" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+model
+</text>
+<text x="110" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+capacity
+</text>
+<text x="110" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="69" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+U
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+license_plate
+</text>
+<text x="110" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+is_active
+</text>
+<text x="110" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER (1)
+</text>
+<line x1="0" y1="88" x2="195" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttles_PK (shuttle_id)
+</text>
+<use xlink:href="#uk_sym" x="4" y="108" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="114" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+INDEX_1v2 (license_plate)
+</text>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath10_0_)" transform="translate(682,761)" >
+<rect x="0" y="0" width="206" height="82" />
+<text id="E0496562-A8514EA1A96B" x="50" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+third_party_services
+</text>
+<line x1="0" y1="17" x2="205" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+tp_id
+</text>
+<text x="114" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+service_name
+</text>
+<text x="114" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (100)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+contact_email
+</text>
+<text x="114" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (100)
+</text>
+<line x1="0" y1="62" x2="205" y2="62" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="69" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="75" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+third_party_services_PK (tp_id)
+</text>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath11_0_)" transform="translate(435,262)" >
+<rect x="0" y="0" width="182" height="127" />
+<text id="4E4438AD-FFD8641720FD" x="79" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+trips
+</text>
+<line x1="0" y1="17" x2="181" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+trip_id
+</text>
+<text x="96" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+start_time
+</text>
+<text x="96" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+TIMESTAMP
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+end_time
+</text>
+<text x="96" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+TIMESTAMP
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+status
+</text>
+<text x="96" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+shuttle_id
+</text>
+<text x="96" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<line x1="0" y1="88" x2="181" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+trips_PK (trip_id)
+</text>
+<line x1="0" y1="107" x2="181" y2="107" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="114" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A6803496-2B9C99BC6056" >
+<text x="16" y="120" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+trips_shuttles_FK (shuttle_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath12_0_)" transform="translate(1048,398)" >
+<rect x="0" y="0" width="191" height="114" />
+<text id="45F0EF81-DF90D18FF238" x="68" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+user_roles
+</text>
+<line x1="0" y1="17" x2="190" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_role_id
+</text>
+<text x="105" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+role_id
+</text>
+<text x="105" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+F
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_id
+</text>
+<text x="105" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<line x1="0" y1="62" x2="190" y2="62" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="69" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="75" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_roles_PK (user_role_id)
+</text>
+<line x1="0" y1="81" x2="190" y2="81" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#fk_sym" x="4" y="88" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#27E3C375-40A60CE7CCD5" >
+<text x="16" y="94" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_roles_roles_FK (role_id)
+</text></a>
+<use xlink:href="#fk_sym" x="4" y="101" width="8" height="8" fill-opacity="1.0"/><a xlink:href="#A0EADD6B-9D3125E3BD33" >
+<text x="16" y="107" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_roles_users_FK (user_id)
+</text></a>
+</g>
+<g  fill="rgb(255,255,180)" stroke="rgb(0,0,255)" fill-opacity="1.0" stroke-opacity="1.0" clip-path="url(#clipPath13_0_)" transform="translate(1033,159)" >
+<rect x="0" y="0" width="180" height="121" />
+<text id="A0EADD6B-9D3125E3BD33" x="75" y="13" fill="rgb(0,0,255)" font-weight="bold"  fill-opacity="1.0" font-size="10" stroke="none">
+users
+</text>
+<line x1="0" y1="17" x2="179" y2="17" fill="none" stroke="rgb(0,0,255)"/>
+<text x="16" y="30" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+*
+</text>
+<text x="2" y="30" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+P
+</text>
+<text x="26" y="30" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+user_id
+</text>
+<text x="88" y="30" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (50)
+</text>
+<text x="16" y="43" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="43" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+name
+</text>
+<text x="88" y="43" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (100)
+</text>
+<text x="16" y="56" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="2" y="56" fill="rgb(0,0,255)" fill-opacity="1.0" font-size="10" stroke="none">
+U
+</text>
+<text x="26" y="56" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+email
+</text>
+<text x="88" y="56" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (100)
+</text>
+<text x="16" y="69" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="69" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+phone
+</text>
+<text x="88" y="69" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+VARCHAR2 (15)
+</text>
+<text x="16" y="82" fill="rgb(255,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+
+</text>
+<text x="26" y="82" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+is_active
+</text>
+<text x="88" y="82" fill="rgb(0,128,0)" fill-opacity="1.0" font-size="10" stroke="none">
+NUMBER (1)
+</text>
+<line x1="0" y1="88" x2="179" y2="88" fill="none" stroke="rgb(0,0,255)"/>
+<use xlink:href="#pk_sym" x="4" y="95" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="101" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+users_PK (user_id)
+</text>
+<use xlink:href="#uk_sym" x="4" y="108" width="8" height="8" fill-opacity="1.0"/>
+<text x="16" y="114" fill="rgb(0,0,0)" fill-opacity="1.0" font-size="10" stroke="none">
+INDEX_1v3 (email)
+</text>
+</g>
+
+</svg>
