@@ -19,17 +19,26 @@ ORDER BY
     shuttle_id;
 
 /*The Shuttle Efficiency and Mileage Trends Report provides a comprehensive analysis of shuttle usage by summarizing daily mileage trends, cumulative total mileage, and the total number of trips completed for each shuttle. This report helps identify utilization patterns, peak usage times, and potential underutilization of shuttle assets.*/
+
 CREATE OR REPLACE VIEW shuttle_efficiency_and_mileage_trends AS
 WITH daily_mileage AS (
     SELECT 
         shuttle_id,
         TRUNC(updated_at) AS mileage_date,
-        SUM(mileage_added) AS daily_mileage_added,
-        MAX(total_mileage) AS total_mileage
+        SUM(mileage_added) AS daily_mileage_added
     FROM 
         shuttle_mileage_records
     GROUP BY 
         shuttle_id, TRUNC(updated_at)
+),
+total_mileage AS (
+    SELECT 
+        shuttle_id,
+        SUM(mileage_added) AS total_mileage
+    FROM 
+        shuttle_mileage_records
+    GROUP BY 
+        shuttle_id
 ),
 trip_count AS (
     SELECT 
@@ -44,10 +53,14 @@ SELECT
     dm.shuttle_id,
     dm.mileage_date,
     dm.daily_mileage_added,
-    dm.total_mileage,
+    tm.total_mileage,
     tc.trip_count
 FROM 
     daily_mileage dm
+LEFT JOIN 
+    total_mileage tm
+ON 
+    dm.shuttle_id = tm.shuttle_id
 LEFT JOIN 
     trip_count tc
 ON 
@@ -55,12 +68,13 @@ ON
 ORDER BY 
     dm.shuttle_id, dm.mileage_date;
 
+
 /*The Most Frequent Routes Report identifies popular routes by analyzing the frequency of trips between pickup and drop-off locations. It provides insights to optimize route planning and improve shuttle availability based on demand.*/
 CREATE OR REPLACE VIEW most_frequent_routes_report AS
 SELECT 
-    r.pickupLocationId AS pickup_location_id,
+    r.Pickup_Location_id AS pickup_location_id,
     l1.name AS pickup_location_name,
-    r.dropoffLocationId AS dropoff_location_id,
+    r.Dropoff_Location_id AS dropoff_location_id,
     l2.name AS dropoff_location_name,
     COUNT(*) AS trip_count
 FROM 
@@ -73,6 +87,8 @@ GROUP BY
     r.pickup_Location_Id, l1.name, r.dropoff_Location_Id, l2.name
 ORDER BY 
     trip_count DESC;
+    
+    
 ---The TOPDRIVERS view ranks drivers based on performance metrics, aggregating data to show total hours worked and trips completed.
 CREATE OR REPLACE VIEW TOPDRIVERS AS
 SELECT
