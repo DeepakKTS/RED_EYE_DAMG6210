@@ -22,11 +22,13 @@ CREATE OR REPLACE PACKAGE BODY shift_management_pkg AS
     BEGIN
 
         IF p_date IS NULL THEN
-            RAISE_APPLICATION_ERROR(-20000, 'Date cannot be null');
+            DBMS_OUTPUT.PUT_LINE('Date cannot be null');
+            RETURN; 
         END IF;
 
         IF p_date < SYSDATE THEN
-            RAISE_APPLICATION_ERROR(-20001, 'Cannot create shifts for past dates');
+            DBMS_OUTPUT.PUT_LINE('Date cannot be in the past');
+            RETURN;
         END IF;
 
         BEGIN 
@@ -42,7 +44,8 @@ CREATE OR REPLACE PACKAGE BODY shift_management_pkg AS
 
         --check if the date already has shifts
         IF (v_shifts_for_date = 2 AND v_shifts_for_date > 0) THEN
-            RAISE_APPLICATION_ERROR(-20002, 'Shifts already exist for the given date');
+            DBMS_OUTPUT.PUT_LINE('Shifts already created for ' || p_date);
+            RETURN;
         END IF;
 
         FOR i IN 1..(2-v_shifts_for_date) LOOP
@@ -64,7 +67,7 @@ CREATE OR REPLACE PACKAGE BODY shift_management_pkg AS
                 FETCH FIRST 1 ROWS ONLY;
             EXCEPTION
                 WHEN NO_DATA_FOUND THEN
-                    RAISE_APPLICATION_ERROR(-20001, 'No available shuttles for the given date');
+                    DBMS_OUTPUT.PUT_LINE('No available shuttles for the given date');
                     EXIT;
             END;
 
@@ -84,7 +87,7 @@ CREATE OR REPLACE PACKAGE BODY shift_management_pkg AS
                 FETCH FIRST 1 ROWS ONLY;
             EXCEPTION
                 WHEN NO_DATA_FOUND THEN
-                    RAISE_APPLICATION_ERROR(-20002, 'No available drivers for the given date');
+                    DBMS_OUTPUT.PUT_LINE('No available drivers for the given date');
                     EXIT;
             END;
 

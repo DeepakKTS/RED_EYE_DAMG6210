@@ -247,12 +247,12 @@ create or replace PACKAGE BODY asset_management_pkg IS
    v_location_id VARCHAR2(50);
    BEGIN
       IF p_name IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001, 'Location name cannot be null.');
-         RETURN;
+         DBMS_OUTPUT.PUT_LINE('Location name cannot be null.');
+         RETURN; 
       END IF;
 
       IF NOT does_location_exist(p_name) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Location with name: ' || p_name || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('Location with name: ' || p_name || ' does not exist.');
          RETURN;
       END IF;
 
@@ -271,12 +271,12 @@ create or replace PACKAGE BODY asset_management_pkg IS
    v_location_id VARCHAR2(50);
    BEGIN
       IF p_name IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001, 'Location name cannot be null.');
+         DBMS_OUTPUT.PUT_LINE('Location name cannot be null.');
          RETURN;
       END IF;
 
       IF NOT does_location_exist(p_name) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Location with name: ' || p_name || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('Location with name: ' || p_name || ' does not exist.');
          RETURN;
       END IF;
 
@@ -313,14 +313,14 @@ create or replace PACKAGE BODY asset_management_pkg IS
    v_shuttle_id VARCHAR2(50);
    BEGIN
       IF p_model IS NULL OR p_license_plate IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001, 'Model and License Plate cannot be null.');
+         DBMS_OUTPUT.PUT_LINE('Model and License Plate cannot be null.');
          RETURN;
       END IF;
 
       v_shuttle_id := 'SHUTTLE_' || p_license_plate;
 
       IF does_shuttle_exist(p_license_plate) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' already exists.');
+         DBMS_OUTPUT.PUT_LINE('Shuttle with license plate: ' || p_license_plate || ' already exists.');
          RETURN;
       END IF;
 
@@ -338,12 +338,12 @@ create or replace PACKAGE BODY asset_management_pkg IS
    v_shuttle_id VARCHAR2(50);
    BEGIN
       IF p_license_plate IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001, 'License Plate cannot be null.');
+         DBMS_OUTPUT.PUT_LINE('License Plate cannot be null.');
          RETURN;
       END IF;
 
       IF NOT does_shuttle_exist(p_license_plate) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('Shuttle with license plate: ' || p_license_plate || ' does not exist.');
          RETURN;
       END IF;
 
@@ -370,12 +370,12 @@ create or replace PACKAGE BODY asset_management_pkg IS
    BEGIN
 
       IF p_license_plate IS NULL THEN
-         RAISE_APPLICATION_ERROR(-20001, 'License Plate cannot be null.');
+         DBMS_OUTPUT.PUT_LINE('License Plate cannot be null.');
          RETURN;
       END IF;
 
       IF NOT does_shuttle_exist(p_license_plate) THEN
-         RAISE_APPLICATION_ERROR(-20002, 'Shuttle with license plate: ' || p_license_plate || ' does not exist.');
+         DBMS_OUTPUT.PUT_LINE('Shuttle with license plate: ' || p_license_plate || ' does not exist.');
          RETURN;
       END IF;
 
@@ -384,7 +384,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
       END IF;
 
       IF p_maintenance_date < SYSDATE THEN
-         RAISE_APPLICATION_ERROR(-20003, 'Maintenance date cannot be in the past.');
+         DBMS_OUTPUT.PUT_LINE('Maintenance date cannot be in the past.');
          RETURN;
       END IF;
 
@@ -417,7 +417,7 @@ create or replace PACKAGE BODY asset_management_pkg IS
    EXCEPTION
       WHEN OTHERS THEN
          ROLLBACK;
-         RAISE;
+         DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
 END;
 
 END asset_management_pkg;
