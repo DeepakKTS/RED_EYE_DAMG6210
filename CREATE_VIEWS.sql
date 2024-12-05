@@ -264,7 +264,7 @@ SELECT
     s.start_time AS shift_start_time,
     s.end_time AS shift_end_time,
     d.driver_id,
-    d.licence_number AS driver_license,
+    d.license_number AS driver_license,
     sh.shuttle_id,
     sh.model AS shuttle_model,
     sh.capacity AS shuttle_capacity,
